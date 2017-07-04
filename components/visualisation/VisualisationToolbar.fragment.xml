@@ -1,0 +1,45 @@
+<Bar
+	xmlns="sap.m"
+	xmlns:m="sap.m"
+  id="visualisationToolbar"
+>
+  <contentLeft>
+    <ToggleButton 
+      id="btnAutoRun"
+      icon="sap-icon://synchronize"
+      tooltip="{i18n>btnAutoRun.tooltip}"
+      press="onAutoRunToggled"
+      pressed="{visualisationState>/autoRun}"
+		  enabled="{= ${visualisationState>/busy} === false }"
+    />
+		<Button 
+		  id="btnRun"
+		  icon="sap-icon://refresh"
+		  tooltip="{i18n>btnRun.tooltip}"
+		  press="onRunPressed"
+		  enabled="{= ${visualisationState>/busy} === false &amp;&amp; ${visualisationState>/queryValid} === true &amp;&amp; ${visualisationState>/queryChanged} === true }"
+      visible="{= ${visualisationState>/autoRun} === false }"
+		/>
+		<Button 
+		  id="btnCancel"
+		  icon="sap-icon://cancel"
+		  tooltip="{i18n>btnCancel.tooltip}"
+		  press="onCancelPressed"
+		  enabled="{= ${visualisationState>/busy} === true }"
+		/>
+		<Button 
+		  id="btnClear"
+		  icon="sap-icon://decline"
+		  tooltip="{i18n>btnClear.tooltip}"
+		  press="onClearPressed"
+		  enabled="{= ${visualisationState>/busy} === false }"
+		/>
+  </contentLeft>
+  <contentMiddle>
+    <Label 
+      text="{= ${visualisationState>/rowCount} ? ${i18n>rowCount} + ': ' + ${visualisationState>/rowCount} : ''}"
+    />
+  </contentMiddle>
+  <contentRight>
+  </contentRight>
+</Bar>       

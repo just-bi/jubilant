@@ -1,0 +1,51 @@
+{"oDataServices": [
+  { "LABEL": "Tweede Kamer", 
+    "SERVICE_URI": "/odata/tweedekamer", 
+    "sap.ui.model.odata.v2.ODataModel.options": {
+      "maxDataServiceVersion": "3.0"
+    }
+  },
+  { "LABEL": "Odata Sample", 
+    "SERVICE_URI": "/odata/odata", 
+    "sap.ui.model.odata.v2.ODataModel.options": {
+      "maxDataServiceVersion": "3.0"
+    }
+  },
+  { "LABEL": "Northwind", 
+    "SERVICE_URI": "/odata/northwind",
+    "sap.ui.model.odata.v2.ODataModel.options": {
+      "maxDataServiceVersion": "3.0"
+    }
+  },
+  { "LABEL": "CBS Catalog",
+    "SERVICE_URI": "/odata/cbs/catalog",
+    "sap.ui.model.odata.v2.ODataModel.options": {
+      "maxDataServiceVersion": "3.0"
+    }
+  },
+  { "LABEL": "CBS Regionale kerncijfers Nederland",
+    "SERVICE_URI": "/odata/cbs/70072ned/",
+    "sap.ui.model.odata.v2.ODataModel.options": {
+      "maxDataServiceVersion": "3.0",
+      "defaultOperationMode": "Client",
+      "serviceUrlParams": {
+        "$format": "json"
+      }
+    }
+  },
+  { "LABEL": "CBS Aantal WW Uitkeringen",
+    "SERVICE_URI": "/odata/cbs/37506wwm/",
+    "sap.ui.model.odata.v2.ODataModel.options": {
+      "maxDataServiceVersion": "3.0",
+      "defaultOperationMode": "Client",
+      "serviceUrlParams": {
+        "$format": "json"
+      }
+    }
+  },
+  { "LABEL": "Cars (local Tomcat)", 
+    "SERVICE_URI": "/odata/cars.svc", 
+    "sap.ui.model.odata.v2.ODataModel.options": {
+    }
+  }
+]}

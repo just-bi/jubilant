@@ -1,0 +1,14 @@
+{"logicalOperators": [
+    {
+        "id": "AND",
+        "labelKey": "operator.and",
+        "label": "And",
+        "sap.ui.model.Filter.andFlag": true
+    },
+    {
+        "id": "OR",
+        "labelKey": "operator.or",
+        "label": "Or",
+        "sap.ui.model.Filter.andFlag": false
+    }
+]}

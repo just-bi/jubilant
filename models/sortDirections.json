@@ -1,0 +1,4 @@
+{"sortDirections": [
+  {"id": "ascending", "label": "Ascending", "icon": "sap-icon://sort-ascending", "descending": false}
+, {"id": "descending", "label": "Descending", "icon": "sap-icon://sort-descending", "descending": true}
+]}

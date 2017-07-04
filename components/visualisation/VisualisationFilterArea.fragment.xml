@@ -1,0 +1,284 @@
+<t:TreeTable
+  xmlns="sap.m"
+  xmlns:m="sap.m"
+  xmlns:core="sap.ui.core"
+  xmlns:t="sap.ui.table"
+  xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+  width="100%"
+  visibleRowCount="5"
+  selectionMode="None"
+  columnHeaderVisible="false"
+  columnHeaderHeight="0"
+  enableColumnReordering="false"
+  numberOfExpandedLevels="1"
+  rows="{
+    path: 'filterModel>/nodes',
+    parameters: {
+      arrayNames: ['nodes']
+    }
+  }"
+  id="filterArea"
+  app:visualisationEditorComponentDefaultVisible="false"
+  app:visualisationEditorComponent="jubilant.components.visualisation.VisualisationFilterAreaManager"
+  app:visualisationEditorComponentIcon="sap-icon://filter"
+  tooltip="{i18n>filterLabel.text}"
+>
+  <t:toolbar>
+    <m:Toolbar>
+      <Button 
+        tooltip="{i18n>clearFilterButton.tooltip}"
+        icon="sap-icon://decline"
+        press="onClearFilterButtonPressed"
+      />
+      <Label text="{i18n>filterLabel.text}:"/>
+    </m:Toolbar>
+  </t:toolbar>
+  <t:columns>
+    <t:Column hAlign="Begin">
+      <t:template>
+        <HBox width="100%">
+          <m:Select
+            visible="{= ${filterModel>logicalOperator} ? true : false}"
+            width="110px"
+            items="{
+              path: 'logicalOperators>/logicalOperators',
+              templateShareable: false
+            }"
+            selectedKey="{filterModel>logicalOperator}"
+            tooltip="{i18n>filter.logicalOperator.tooltip}"
+            placeholder="{i18n>filter.logicalOperator.placeholder}"
+            change="onLogicalOperatorChanged"
+          >
+            <core:Item
+              key="{logicalOperators>id}"
+              text="{logicalOperators>label}"
+            />
+          </m:Select>
+          <m:ComboBox
+            width="100%"
+            visible="{= ${filterModel>relationalOperator} ? true : false}"
+            items="{
+              path: 'entitySetDescriptorModel>/type/properties',
+              filters: [{
+                path: '',
+                test: '._isPropertyFilterable'
+              }],
+              sorter: {
+                path: 'oDataProperty/name'
+              },
+              templateShareable: false
+            }"
+            selectedKey="{filterModel>field}"
+            tooltip="{i18n>filter.field.tooltip}"
+            placeholder="{i18n>filter.field.placeholder}"
+            selectionChange="onFilterFieldChanged"
+          >
+            <core:ListItem
+              key="{entitySetDescriptorModel>oDataProperty/name}"
+              text="{
+                path: 'entitySetDescriptorModel>',
+                formatter: '.getLabelTextForPropertyDescriptor'
+              }"
+            />
+          </m:ComboBox>
+        </HBox>
+      </t:template>
+    </t:Column>
+    <t:Column width="140px">
+      <t:template>
+        <m:Select
+          visible="{= ${filterModel>relationalOperator} ? true : false}"
+          width="100%"
+          items="{
+            path: 'relationalOperators>/relationalOperators',
+            templateShareable: false
+          }"
+          selectedKey="{filterModel>relationalOperator}"
+          tooltip="{i18n>filter.relationalOperator.tooltip}"
+          placeholder="{i18n>filter.relationalOperator.placeholder}"
+          change="onRelationalOperatorChanged"
+        >
+        <core:Item
+          key="{relationalOperators>id}"
+          text="{relationalOperators>symbol}"
+        />
+        </m:Select>
+      </t:template>
+    </t:Column>
+    <t:Column>
+      <t:template>
+        <VBox
+          width="100%"
+          visible="{= ${filterModel>relationalOperator} ? true : false}"
+        >
+          <m:Input
+            width="100%"
+            visible="{
+              parts: [
+                {path: 'filterModel>'},
+                {path: 'filterModel>relationalOperator'},
+                {path: 'filterModel>field'},
+                {path: 'filterModel>logicalOperator'}
+              ],
+              formatter: '._filterValueInputVisible'
+            }"
+            value="{
+              path: 'filterModel>value1'
+            }"
+            liveChange="onFilterValueChanged"
+            change="onFilterValueChanged"
+          />
+          <m:DatePicker
+            width="100%"
+            visible="{
+              parts: [
+                {path: 'filterModel>'},
+                {path: 'filterModel>relationalOperator'},
+                {path: 'filterModel>field'},
+                {path: 'filterModel>logicalOperator'}
+              ],
+              formatter: '._filterValueDatePickerVisible'
+            }"
+            value="{
+              path: 'filterModel>value1'
+            }"
+            change="onFilterValueChanged"
+          />
+          <m:DateTimePicker
+            width="100%"
+            visible="{
+              parts: [
+                {path: 'filterModel>'},
+                {path: 'filterModel>relationalOperator'},
+                {path: 'filterModel>field'},
+                {path: 'filterModel>logicalOperator'}
+              ],
+              formatter: '._filterValueDateTimePickerVisible'
+            }"
+            value="{
+              path: 'filterModel>value1'
+            }"
+            change="onFilterValueChanged"
+          />
+          <m:TimePicker
+            width="100%"
+            visible="{
+              parts: [
+                {path: 'filterModel>'},
+                {path: 'filterModel>relationalOperator'},
+                {path: 'filterModel>field'},
+                {path: 'filterModel>logicalOperator'}
+              ],
+              formatter: '._filterValueTimePickerVisible'
+            }"
+            value="{
+              path: 'filterModel>value1'
+            }"
+            change="onFilterValueChanged"
+          />
+          <m:ComboBox
+            width="100%"
+            visible="{
+              parts: [
+                {path: 'filterModel>'},
+                {path: 'filterModel>relationalOperator'},
+                {path: 'filterModel>field'},
+                {path: 'filterModel>logicalOperator'}
+              ],
+              formatter: '._filterValueComboBoxVisible'
+            }"
+            selectedItem="{filterModel>value1}"
+            selectionChange="onFilterValueChanged"
+          >
+          </m:ComboBox>
+          <m:MultiComboBox
+            width="100%"
+            visible="{
+              parts: [
+                {path: 'filterModel>'},
+                {path: 'filterModel>relationalOperator'},
+                {path: 'filterModel>field'},
+                {path: 'filterModel>logicalOperator'}
+              ],
+              formatter: '._filterValueMultiComboBoxVisible'
+            }"
+            selectedKeys="{filterModel>value1}"
+            selectionChange="onFilterValueChanged"
+          >
+          </m:MultiComboBox>
+          <m:DateRangeSelection
+            width="100%"
+            visible="{
+              parts: [
+                {path: 'filterModel>'},
+                {path: 'filterModel>relationalOperator'},
+                {path: 'filterModel>field'},
+                {path: 'filterModel>logicalOperator'}
+              ],
+              formatter: '._filterValueDateRangeSelectionVisible'
+            }"
+            change="onFilterValueChanged"
+          />
+          <m:RangeSlider
+            width="100%"
+            showAdvancedTooltips="true"
+            inputsAsTooltips="true"
+            enableTickmarks="true"
+            visible="{
+              parts: [
+                {path: 'filterModel>'},
+                {path: 'filterModel>relationalOperator'},
+                {path: 'filterModel>field'},
+                {path: 'filterModel>logicalOperator'}
+              ],
+              formatter: '._filterValueRangeSliderVisible'
+            }"
+            change="onFilterValueChanged"
+          />
+        </VBox>
+      </t:template>
+    </t:Column>
+    <t:Column
+        hAlign="Begin"
+        width="75px"
+    >
+      <t:template>
+        <HBox>
+          <Button
+            icon="sap-icon://clear-filter"
+            tooltip="{18n>filter.btnClearFilter.tooltip}"
+            press="onRemoveFilterPressed"
+            enabled="{= ${filterModel>level} === 0 ? (${filterModel>/nodes/0/nodes/0} ? true : false) : true}"
+          />
+          <Button
+            icon="sap-icon://add-filter"
+            tooltip="{18n>filter.btnAddFilter.tooltip}"
+            press="onAddFilterPressed"
+            visible="{= ${filterModel>logicalOperator} ? true : false}"
+          />
+        </HBox>
+      </t:template>
+    </t:Column>
+    <t:Column
+        hAlign="Begin"
+        width="75px"
+    >
+      <t:template>
+        <HBox>
+          <Button
+            icon="sap-icon://outdent"
+            tooltip="{18n>filter.btnOutdent.tooltip}"
+            press="onOutdentFilterPressed"
+            visible="{= ${filterModel>level} > 1 ? true : false}"
+          />
+          <Button
+            icon="sap-icon://indent"
+            tooltip="{18n>filter.btnIndent.tooltip}"
+            press="onIndentFilterPressed"
+            visible="{= ${filterModel>level} === 0 ? false : true}"
+          />
+        </HBox>
+      </t:template>
+    </t:Column>
+  </t:columns>
+</t:TreeTable>

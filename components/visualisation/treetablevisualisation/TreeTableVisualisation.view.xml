@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mvc:View
+  xmlns="sap.m"
+  xmlns:m="sap.m"
+  xmlns:core="sap.ui.core"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns:t="sap.ui.table"
+  xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+  displayBlock="true"
+  height="100%"
+  controllerName="jubilant.components.visualisation.treetablevisualisation.TreeTableVisualisation"
+  columnHeaderVisible="false"
+>
+    <m:VBox>
+        <core:Fragment fragmentName="jubilant.components.visualisation.VisualisationToolbar" type="XML" />
+        <core:Fragment fragmentName="jubilant.components.visualisation.VisualisationAxesArea" type="XML" />
+        <core:Fragment fragmentName="jubilant.components.visualisation.VisualisationFilterArea" type="XML" />
+        <core:Fragment fragmentName="jubilant.components.visualisation.VisualisationSortArea" type="XML" />
+        <t:Table 
+          app:visualisationEditorComponentDefaultVisible="true"
+          app:visualisationEditorComponent=""
+          app:visualisationEditorComponentIcon="sap-icon://tree"
+          tooltip="{i18n>hierarchyConditionTable.title.label.text}"
+          id="hierarchyConditionTable"
+          selectionMode="None"
+          visibleRowCount="1"
+          rows="{
+            path: 'hierarchyConditionModel>/nodes',
+            parameters: {
+              arrayNames: ['nodes']
+            }
+          }"
+        >
+          <t:title>
+            <m:Label text="{i18n>hierarchyConditionTable.title.label.text}:"/>
+          </t:title>
+          <t:columns>
+            <t:Column
+              name="keyColumn"
+            >
+              <m:Label text="{i18n>hierarchyConditionTable.columns.keyColumn.label.text}"/>
+              <t:template>
+                <m:ComboBox
+                  width="100%"
+                  items="{
+                    path: 'entitySetDescriptorModel>/type/properties',
+                    filters: [{
+                      path: '',
+                      test: '._isPropertyFilterable'
+                    }],
+                    sorter: {
+                      path: 'oDataProperty/name'
+                    },
+                    templateShareable: false
+                  }"
+                  selectedKey="{hierarchyConditionModel>keyField}"
+                  selectionChange="onKeyFieldChanged"
+                  tooltip="{i18n>hierarchyConditionTable.keyComboBox.tooltip}"
+                  placeholder="{i18n>hierarchyConditionTable.keyComboBox.placeholder}"
+                >
+                  <core:ListItem
+                    key="{entitySetDescriptorModel>oDataProperty/name}"
+                    text="{
+                      path: 'entitySetDescriptorModel>',
+                      formatter: '.getLabelTextForPropertyDescriptor'
+                    }"
+                  />
+                </m:ComboBox>
+              </t:template>
+            </t:Column>
+            <t:Column
+              name="relationalOperatorColumn"
+            >
+              <m:Label text="{i18n>hierarchyConditionTable.columns.relationalOperatorColumn.label.text}"/>
+              <t:template>
+                <m:Text text="="/>
+              </t:template>
+            </t:Column>
+            <t:Column
+              name="parentKeyColumn"
+            >
+              <m:Label text="{i18n>hierarchyConditionTable.columns.parentKeyColumn.label.text}"/>
+              <t:template>
+                <m:ComboBox
+                  width="100%"
+                  items="{
+                    path: 'entitySetDescriptorModel>/type/properties',
+                    filters: [{
+                      path: '',
+                      test: '._isPropertyFilterable'
+                    }],
+                    sorter: {
+                      path: 'oDataProperty/name'
+                    },
+                    templateShareable: false
+                  }"
+                  selectedKey="{hierarchyConditionModel>parentKeyField}"
+                  selectionChange="onParentKeyFieldChanged"
+                  tooltip="{i18n>hierarchyConditionTable.parentKeyComboBox.tooltip}"
+                  placeholder="{i18n>hierarchyConditionTable.parentKeyComboBox.placeholder}"
+                >
+                  <core:ListItem
+                    key="{entitySetDescriptorModel>oDataProperty/name}"
+                    text="{
+                      path: 'entitySetDescriptorModel>',
+                      formatter: '.getLabelTextForPropertyDescriptor'
+                    }"
+                  />
+                </m:ComboBox>
+              </t:template>
+            </t:Column>
+          </t:columns>
+        </t:Table>
+        <t:TreeTable 
+            id="visualisation"
+            selectionMode="None"
+            toggleOpenState="onToggleOpenState"
+            busy="{visualisationState>/busy}"
+            visibleRowCountMode="Interactive"
+            minAutoRowCount="10"
+        ></t:TreeTable>
+    </m:VBox>
+</mvc:View>

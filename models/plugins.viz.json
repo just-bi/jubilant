@@ -1,0 +1,64 @@
+{"plugins": [
+  {
+    "name": "metadatagraph",
+    "scope": "model",
+    "tooltip": "OData Metadata Graph",
+    "description": "Graph of all OData entities and their relationships",
+    "icon": "sap-icon://org-chart",
+    "factory": "jubilant.components.visualisation.odatametadatagraph.ODataMetadataGraphFactory",
+    "hasAxes": false,
+    "hasFilter": false,
+    "libraries": {
+      "vis": {
+        "path": "/vis-4.20.0/dist/",
+        "scripts": ["vis-network.min.js"],
+        "stylesheets": ["vis.min.css"]
+      }
+    }
+  },
+  {
+    "name": "table",
+    "scope": "entityset",
+    "tooltip": "Table visualization",
+    "description": "A table visualizes data as a variable number of rows, showing values along a fixed set of columns.",
+    "icon": "sap-icon://table-view",
+    "factory": "jubilant.components.visualisation.tablevisualisation.TableVisualisationFactory",
+    "axes":[
+      {
+        "id": "columns", 
+        "label": "Columns",
+        "icon": "sap-icon://chart-axis"
+      }
+    ]
+  },
+  {
+    "name": "treetable",
+    "scope": "entityset",
+    "tooltip": "Tree Table visualization",
+    "description": "A tree table visualizes data as a variable number of nested rows, showing values along a fixed set of columns.",
+    "icon": "sap-icon://tree",
+    "factory": "jubilant.components.visualisation.treetablevisualisation.TreeTableVisualisationFactory",
+    "axes":[
+      {
+        "id": "columns", 
+        "label": "Columns",
+        "icon": "sap-icon://chart-axis"
+      }
+    ]
+  },
+  {
+    "name": "datagraph",
+    "scope": "entityset",
+    "tooltip": "OData Graph visualization",
+    "description": "The graph visualisation uses navigation properties to draw a graph of related data.",
+    "icon": "sap-icon://share-2",
+    "factory": "jubilant.components.visualisation.odatagraphvisualisation.ODataGraphVisualisationFactory",
+    "libraries": {
+      "vis": {
+        "path": "/vis-4.20.0/dist/",
+        "scripts": ["vis-network.min.js"],
+        "stylesheets": ["vis.min.css"]
+      }
+    }
+  }
+]}

@@ -1,0 +1,100 @@
+{
+  "Null": {
+    "values": [null],
+    "sapUi5Type": "sap.ui.model.odata.type.Raw"
+  },
+  "Edm.Binary": {
+    "pattern": "[A-Fa-f0-9][A-Fa-f0-9]*",
+    "enclosures": [
+      {"prefix": "binary'", "postfix": "'"},
+      {"prefix": "X'", "postfix": "'"}
+    ],
+    "sapUi5Type": "sap.ui.model.odata.type.Raw"
+  },
+  "Edm.Boolean": {
+    "values": [true, false],
+    "sapUi5Type": "sap.ui.model.odata.type.Boolean"
+  },
+  "Edm.Byte": {
+    "pattern": "[0-9]{1,3}",
+    "min": 0,
+    "max": 255,
+    "numeric": true,
+    "sapUi5Type": "sap.ui.model.odata.type.Byte"
+  },
+  "Edm.DateTime": {
+    "enclosures": [
+      {"prefix": "datetime'", "postfix": "'"}
+    ],
+    "sapUi5Type": "sap.ui.model.odata.type.DateTime"
+  },
+  "Edm.Decimal": {
+    "enclosures": [
+      {"postfix": "m"},
+      {"postfix": "M"}
+    ],
+    "pattern": "[0-9]+\\.[0-9]+",
+    "numeric": true,
+    "sapUi5Type": "sap.ui.model.odata.type.Decimal"
+  },
+  "Edm.Double": {
+    "enclosures": [
+      {"postfix": "d"}
+    ],
+    "pattern": "[0-9]+((\\.[0-9]+)|(E[+-][0-9]+)?)",
+    "numeric": true,
+    "sapUi5Type": "sap.ui.model.odata.type.Double"
+  },
+  "Edm.Single": {
+    "enclosures": [
+      {"postfix": "s"}
+    ],
+    "pattern": "[0-9]+((\\.[0-9]+)|(E[+-][0-9]+)?)",
+    "numeric": true,
+    "sapUi5Type": "sap.ui.model.odata.type.Single"
+  },
+  "Edm.Guid": {
+    "pattern": "",
+    "sapUi5Type": "sap.ui.model.odata.type.Guid"
+  },
+  "Edm.Int16": {
+    "numeric": true,
+    "min": -32768,
+    "max":  32767,
+    "sapUi5Type": "sap.ui.model.odata.type.Int16"
+  },
+  "Edm.Int32": {
+    "numeric": true,
+    "min": -2147483648,
+    "max":  2147483647,
+    "sapUi5Type": "sap.ui.model.odata.type.Int32"
+  },
+  "Edm.Int64": {
+    "numeric": true,
+    "min": -9223372036854775808,
+    "max":  9223372036854775807,
+    "sapUi5Type": "sap.ui.model.odata.type.Int64"
+  },
+  "Edm.SByte": {
+    "numeric": true,
+    "min": -128,
+    "max":  127,
+    "sapUi5Type": "sap.ui.model.odata.type.SByte"
+  },
+  "Edm.String": {
+    "enclosures": [
+      {"prefix": "'", "postfix": "'", "escapes": [
+        {"find": "'", "replace": "''"}
+      ]}
+    ],
+    "sapUi5Type": "sap.ui.model.odata.type.String"
+  },
+  "Edm.Time": {
+    "sapUi5Type": "sap.ui.model.odata.type.Time"
+  },
+  "Edm.DateTimeOffset": {
+    "sapUi5Type": "sap.ui.model.odata.type.DateTimeOffset"
+  },
+  "Edm.Stream": {
+  }
+}
