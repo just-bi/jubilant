@@ -10,8 +10,8 @@
     "hasFilter": false,
     "libraries": {
       "vis": {
-        "path": "/vis-4.20.0/dist/",
-        "scripts": ["vis-network.min.js"],
+        "path": "https://cdnjs.cloudflare.com/ajax/libs/vis/4.20.0/",
+        "scripts": ["vis.min.js"],
         "stylesheets": ["vis.min.css"]
       }
     }
@@ -55,8 +55,8 @@
     "factory": "jubilant.components.visualisation.odatagraphvisualisation.ODataGraphVisualisationFactory",
     "libraries": {
       "vis": {
-        "path": "/vis-4.20.0/dist/",
-        "scripts": ["vis-network.min.js"],
+        "path": "https://cdnjs.cloudflare.com/ajax/libs/vis/4.20.0/",
+        "scripts": ["vis.min.js"],
         "stylesheets": ["vis.min.css"]
       }
     }
