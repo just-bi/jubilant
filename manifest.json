@@ -1,0 +1,107 @@
+{
+  "_version": "1.1.0",
+  "sap.app": {
+    "_version": "1.1.0",
+    "id": "jubilant",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "applicationVersion": {
+      "version": "1.0.0"
+    },
+    "dataSources": {
+      "oDataServices": {
+        "uri": "models/odataServices.json",
+        "type": "JSON"
+      },
+      "oDataTypes": {
+        "uri": "models/odataTypes.json",
+        "type": "JSON"
+      },
+      "logicalOperators": {
+        "uri": "models/logicalOperators.json",
+        "type": "JSON"
+      },
+      "relationalOperators": {
+        "uri": "models/relationalOperators.json",
+        "type": "JSON"
+      },
+      "sortDirections": {
+        "uri": "models/sortDirections.json",
+        "type": "JSON"
+      },
+      "visualisationPlugins": {
+        "uri": "models/plugins.viz.json",
+        "type": "JSON"
+      }
+    }
+  },
+  "sap.ui": {
+    "_version": "1.1.0",
+    "technology": "UI5",
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    },
+    "supportedThemes": [
+      "base",
+      "sap_hcb",
+      "sap_bluecrystal",
+      "sap_ux",
+      "sap_platinum",
+      "sap_goldreflection"
+    ]
+  },
+  "sap.ui5": {
+    "_version": "1.1.0",
+    "rootView": "jubilant.components.app.App",
+    "dependencies": {
+      "minUI5Version": "1.45",
+      "libs": {
+        "sap.m": {}
+      }
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "jubilant.i18n.i18n"
+        }
+      },
+      "oDataServices": {
+        "type": "sap.ui.model.json.JSONModel",
+        "dataSource": "oDataServices"
+      },
+      "oDataTypes": {
+        "type": "sap.ui.model.json.JSONModel",
+        "dataSource": "oDataTypes"
+      },
+      "logicalOperators": {
+        "type": "sap.ui.model.json.JSONModel",
+        "dataSource": "logicalOperators"
+      },
+      "relationalOperators": {
+        "type": "sap.ui.model.json.JSONModel",
+        "dataSource": "relationalOperators"
+      },
+      "sortDirections": {
+        "type": "sap.ui.model.json.JSONModel",
+        "dataSource": "sortDirections"
+      },
+      "visualisationPlugins": {
+        "type": "sap.ui.model.json.JSONModel",
+        "dataSource": "visualisationPlugins"
+      },
+      "applicationState": {
+        "type": "sap.ui.model.json.JSONModel"
+      }
+    },
+    "resources": {
+      "css": [
+        {"uri": "css/styles.css"}
+      ]
+    }
+  }
+}

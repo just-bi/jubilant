@@ -1,0 +1,127 @@
+{"relationalOperators": [
+  {
+    "id": "equals",
+    "symbol": "=", 
+    "labelKey": "operator.equals", 
+    "oDataOperator": "eq",
+    "sap.ui.model.FilterOperator": "EQ",
+    "isDefault": true
+  },
+  {
+    "id": "not equals",
+    "symbol": "<>", 
+    "labelKey": "operator.notEquals", 
+    "oDataOperator": "ne",
+    "sap.ui.model.FilterOperator": "NE"
+  },
+  {
+    "id": "greater than or equals",
+    "symbol": ">=", 
+    "labelKey": "operator.greaterThanOrEquals", 
+    "oDataOperator": "ge",
+    "sap.ui.model.FilterOperator": "GE"
+  },
+  {
+    "id": "greater than",
+    "symbol": ">", 
+    "labelKey": "operator.greaterThan", 
+    "oDataOperator": "gt",
+    "sap.ui.model.FilterOperator": "GT"
+  },
+  {
+    "id": "between",
+    "symbol": "=><=", 
+    "labelKey": "operator.between", 
+    "sap.ui.model.FilterOperator": "BT", 
+    "range": true
+  },
+  {
+    "id": "less than",
+    "symbol": "<", 
+    "labelKey": "operator.lessThan", 
+    "oDataOperator": "lt",
+    "sap.ui.model.FilterOperator": "LT"
+  },
+  {
+    "id": "less than or equals",
+    "symbol": "<=", 
+    "labelKey": "operator.lessThanOrEquals", 
+    "oDataOperator": "le",
+    "sap.ui.model.FilterOperator": "LE"
+  },
+  {
+    "id": "starts with",
+    "symbol": "~=", 
+    "labelKey": "operator.startsWith", 
+    "sap.ui.model.FilterOperator": "StartsWith", 
+    "includeFieldFilter": {
+      "oDataProperty": {
+        "type": "Edm.String"
+      }
+    }
+  },
+  {
+    "id": "ends with",
+    "symbol": "=~", 
+    "labelKey": "operator.endsWith", 
+    "sap.ui.model.FilterOperator": "EndsWith", 
+    "includeFieldFilter": {
+      "oDataProperty": {
+        "type": "Edm.String"
+      }
+    }
+  },
+  {
+    "id": "contains",
+    "symbol": "~", 
+    "labelKey": "operator.contains", 
+    "sap.ui.model.FilterOperator": "Contains", 
+    "includeFieldFilter": {
+      "oDataProperty": {
+        "type": "Edm.String"
+      }
+    }
+  },
+  {
+    "id": "in",
+    "symbol": "In", 
+    "labelKey": "operator.in",
+    "multiple": {
+      "sap.ui.model.FilterOperator": "EQ",
+      "and": false
+    }
+  },
+  {
+    "id": "not in",
+    "symbol": "Not In", 
+    "labelKey": "operator.notin",
+    "multiple": {
+      "sap.ui.model.FilterOperator": "NE",
+      "and": true
+    }
+  },
+  {
+    "id": "is null",
+    "symbol": "Is Null", 
+    "labelKey": "operator.isnull", 
+    "excludeFieldFilter": {
+      "oDataProperty": {
+        "nullable": "false"
+      }
+    },
+    "sap.ui.model.FilterOperator": "EQ", 
+    "value1": null
+  },
+  {
+    "id": "is not null",
+    "symbol": "Is Not Null", 
+    "labelKey": "operator.isnotnull", 
+    "excludeFieldFilter": {
+      "oDataProperty": {
+        "nullable": "false"
+      }
+    },
+    "sap.ui.model.FilterOperator": "NE", 
+    "value1": null
+  }
+]}

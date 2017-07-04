@@ -1,0 +1,15 @@
+{
+  "nodeShapes": [
+    {"id": "circle", "label": "Circle"},
+    {"id": "ellipse", "label": "Ellipse"},
+    {"id": "box", "label": "Box"},
+    {"id": "diamond", "label": "Diamond"},
+    {"id": "dot", "label": "Dot"},
+    {"id": "square", "label": "Square"},
+    {"id": "triangle", "label": "Triangle"},
+    {"id": "triangleDown", "label": "Triangle (down)"},
+    {"id": "star", "label": "Star"},
+    {"id": "text", "label": "None (text)"},
+    {"id": "database", "label": "Database"}
+  ]
+}

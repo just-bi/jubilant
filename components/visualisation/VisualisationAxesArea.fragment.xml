@@ -1,0 +1,70 @@
+<VBox
+	xmlns="sap.m"
+	xmlns:m="sap.m"
+	xmlns:core="sap.ui.core"
+	xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+	width="100%"
+  id="axesArea"
+  app:visualisationEditorComponentDefaultVisible="true"
+  app:visualisationEditorComponent="jubilant.components.visualisation.VisualisationAxesAreaManager"
+  app:visualisationEditorComponentIcon="sap-icon://chart-axis"
+  tooltip="{i18n>axesLabel.text}"
+>
+  <items>
+    <Label text="{i18n>axesLabel.text}:"/>
+    <VBox
+      id="axes"
+      items="{
+        path: 'axesModel>/',
+        templateShareable: false
+      }"
+    >
+      <items>
+        <VBox
+          width="100%"
+          app:axisId="{axesModel>id}"
+        >
+          <HBox>
+            <Button
+              app:buttonId="addAll"
+              enabled="true"
+              icon="sap-icon://add"
+              tooltip="{i18n>btnAddAllToAxis.tooltip}"
+              press="onAddAllToAxisPressed"
+            />
+            <Button
+              app:buttonId="clearAxis"
+              enabled="false"
+              icon="sap-icon://decline"
+              tooltip="{i18n>btnRemoveAllFromAxis.tooltip}"
+              press="onRemoveAllFromAxisPressed"
+            />
+            <Label
+              id="label"
+              text="{axesModel>label}:"
+              labelFor="comboBox"
+              class="sapUiTinyMargin"
+            />
+          </HBox>
+          <MultiComboBox
+            id="comboBox"
+            placeholder="{i18n>axisComboBox.placeholder}"
+            selectionFinish="onAxisChanged"
+            items="{
+              path: 'entitySetDescriptorModel>/type/properties',
+              templateShareable: false
+            }"
+          >
+            <core:Item
+              key="{entitySetDescriptorModel>oDataProperty/name}"
+              text="{
+                path: 'entitySetDescriptorModel>',
+                formatter: '.getLabelTextForPropertyDescriptor'
+              }"
+            />
+          </MultiComboBox>
+        </VBox>
+      </items>
+    </VBox>
+  </items>
+</VBox>

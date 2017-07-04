@@ -1,0 +1,134 @@
+<t:Table
+  xmlns="sap.m"
+  xmlns:m="sap.m"
+  xmlns:core="sap.ui.core"
+  xmlns:t="sap.ui.table"
+  xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+  width="100%"
+  visibleRowCountMode="Interactive"
+  minAutoRowCount="3"
+  selectionMode="None"
+  columnHeaderVisible="false"
+  enableColumnReordering="false"
+  rows="{
+    path: 'sortModel>/'
+  }"
+  id="sortArea"
+  app:visualisationEditorComponentDefaultVisible="false"
+  app:visualisationEditorComponent="jubilant.components.visualisation.VisualisationSortAreaManager"
+  app:visualisationEditorComponentIcon="sap-icon://sort"
+  tooltip="{i18n>sortLabel.text}"
+>
+  <t:toolbar>
+    <m:Toolbar>
+      <Button 
+        tooltip="{i18n>clearSortButton.tooltip}"
+        icon="sap-icon://decline"
+        press="onClearAllSortColumns"
+      />
+      <Label text="{i18n>sortLabel.text}:"/>
+    </m:Toolbar>
+  </t:toolbar>
+  <t:columns>
+    <t:Column hAlign="Begin">
+      <t:template>
+        <m:ComboBox
+          width="100%"
+          items="{
+            path: 'entitySetDescriptorModel>/type/properties',
+            filters: [{
+              path: '',
+              test: '._isPropertyFilterable'
+            }],
+            sorter: {
+              path: 'oDataProperty/name'
+            },
+            templateShareable: false
+          }"
+          selectedKey="{sortModel>field}"
+          tooltip="{i18n>sort.field.tooltip}"
+          placeholder="{i18n>sort.field.placeholder}"
+          selectionChange="onSortFieldChanged"
+        >
+          <core:ListItem
+            key="{entitySetDescriptorModel>oDataProperty/name}"
+            text="{
+              path: 'entitySetDescriptorModel>',
+              formatter: '.getLabelTextForPropertyDescriptor'
+            }"
+          />
+        </m:ComboBox>        
+      </t:template>      
+    </t:Column>
+    <t:Column 
+      hAlign="Begin"
+      width="75px"
+    >
+      <t:template>
+        <HBox
+          items="{
+            path: 'sortDirections>/sortDirections',
+            templateShareable: false
+          }"
+        >
+          <ToggleButton 
+            tooltip="{sortDirections>label}"
+            icon="{sortDirections>icon}"
+            app:sortDirection="{sortDirections>id}"
+            visible="{= ${sortModel>field} ? true : false}"
+            pressed="{= ${sortModel>descending} === ${sortDirections>descending} }"
+            press="onSortDirectionButtonPressed"
+          />
+        </HBox>
+      </t:template>      
+    </t:Column>
+    <t:Column 
+      hAlign="Begin"
+      width="75px"
+    >
+      <t:template>
+        <HBox
+        >
+          <items>
+            <Button 
+              icon="sap-icon://arrow-top"
+              press="onSortColumnUpButtonPressed"
+              tooltip="{i18n>sortColumnButtonUp.tooltip}"
+            />
+            <Button 
+              icon="sap-icon://arrow-bottom"
+              press="onSortColumnDownButtonPressed"
+              tooltip="{i18n>sortColumnButtonDown.tooltip}"
+            />
+          </items>
+        </HBox>
+      </t:template>      
+    </t:Column>
+    <t:Column 
+      hAlign="Begin"
+      width="75px"
+    >
+      <t:template>
+        <HBox
+        >
+          <items>
+            <Button 
+              icon="sap-icon://add"
+              press="onAddSortColumnButtonPressed"
+              enabled="{= ${sortModel>field} ? true : false}"
+              tooltip="{i18n>addSortColumnButton.tooltip}"
+            />
+            <Button 
+              icon="sap-icon://decline"
+              press="onRemoveSortColumnButtonPressed"
+              tooltip="{i18n>removeSortColumnButton.tooltip}"
+            />
+          </items>
+        </HBox>
+      </t:template>      
+    </t:Column>
+  </t:columns>
+  <t:noData>
+    <Text text="{i18n>noSortSpecification.text}"/>
+  </t:noData>
+</t:Table>

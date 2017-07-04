@@ -1,0 +1,6 @@
+{
+  "edgeStyles": [
+    {"id": "dashed", "label": "Dashed"},
+    {"id": "solid", "label": "Solid"}
+  ]
+}

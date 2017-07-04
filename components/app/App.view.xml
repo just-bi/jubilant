@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mvc:View
+  xmlns="sap.m"
+  xmlns:m="sap.m"
+  xmlns:core="sap.ui.core"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns:tnt="sap.tnt"
+  xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+  controllerName="jubilant.components.app.App"
+  displayBlock="true"
+  class="sapUiSizeCompact"
+>
+  <App id="app" >
+    <pages>
+      <tnt:ToolPage sideExpanded="{applicationState>/sidebarExpanded}">
+        <tnt:header>
+          <tnt:ToolHeader>
+            <m:ToggleButton 
+              id="sideNavigationToggleButton"
+              icon="sap-icon://menu2"
+              type="Transparent"
+              pressed="{applicationState>/sidebarExpanded}"
+              tooltip="{i18n>sideNavigationToggleButton.tooltip}"
+            >
+              <m:layoutData>
+                <m:OverflowToolbarLayoutData priority="NeverOverflow" />
+              </m:layoutData>
+            </m:ToggleButton>
+            <ComboBox 
+              id="oDataEndpointCombobox"
+              items="{
+                path: 'oDataServices>/oDataServices',
+                sorter: {
+                  path: 'SERVICE_URI'
+                }
+              }"
+              selectionChange="onChangeServiceUri"
+              width="25em"
+              placeholder="{i18n>oDataEndpointCombobox.placeholder}"
+            >
+              <m:layoutData>
+                <m:OverflowToolbarLayoutData priority="NeverOverflow" />
+              </m:layoutData>
+              <core:Item 
+                key="{oDataServices>SERVICE_URI}"
+                text="{= ${oDataServices>LABEL} ? ${oDataServices>LABEL} : ${oDataServices>SERVICE_URI} }"
+              />
+            </ComboBox>
+            <!--
+            <core:Fragment fragmentName="jubilant.components.visualisation.VisualisationsToolbar" type="XML" />
+            -->
+            <Toolbar
+              xmlns="sap.m"
+              xmlns:m="sap.m"
+              content="{visualisationPlugins>/plugins}"
+              id="visualisationPluginToolbar"
+            >
+              <content>
+                <Button 
+                  icon="{visualisationPlugins>icon}"
+                  tooltip="{visualisationPlugins>tooltip}"
+                  app:visualisationname="{visualisationPlugins>name}"
+                  press="onVisualisationButtonPressed"
+                  enabled="false"
+                  visible="false"
+                />
+              </content>
+            </Toolbar>
+          </tnt:ToolHeader>
+        </tnt:header>
+        <tnt:sideContent>
+          <tnt:SideNavigation 
+            expanded="true"
+            itemSelect="onItemSelect"
+          >
+            <tnt:NavigationList 
+              id="navigationList"
+              items="{
+                path: 'jubilantMetaModel>/entitySets',
+                sorter: {
+                  path: 'oDataEntitySet/name'
+                }
+              }"
+            >                        
+              <tnt:NavigationListItem 
+                key="{jubilantMetaModel>oDataEntitySet/name}"
+                text="{jubilantMetaModel>oDataEntitySet/name}"
+                tooltip="{jubilantMetaModel>oDataEntitySet/name}"
+                icon="{= ${jubilantMetaModel>type/extensions/aHR0cDovL3d3dy5zYXAuY29tL1Byb3RvY29scy9TQVBEYXRh/semantics} === 'aggregate' ? 'sap-icon://database' : 'sap-icon://table-view' }"
+                select="onEntitySelected"
+              >
+                
+              </tnt:NavigationListItem>
+            </tnt:NavigationList>
+          </tnt:SideNavigation>
+        </tnt:sideContent>
+        <tnt:mainContents>
+          <TabContainer id="tabContainer">
+            <items>
+              <TabContainerItem
+                  name="Welcome!"
+              >
+                <content>
+                  <core:HTML content="&lt;iframe frameborder='0' style='position:absolute; width:100%; height: 100%; left:0px; right:0px; top:0px; bottom:0px;' class='jubilant-doc-frame' src='doc/index.html' &gt;"/>
+                </content>
+              </TabContainerItem>
+            </items>
+          </TabContainer>
+        </tnt:mainContents>
+      </tnt:ToolPage>
+    </pages>
+  </App>
+</mvc:View>

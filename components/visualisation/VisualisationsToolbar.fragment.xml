@@ -1,0 +1,17 @@
+<m:Toolbar
+  xmlns="sap.m"
+  xmlns:m="sap.m"
+  content="{visualisationPlugins>/plugins}"
+  id="visualisationPluginToolbar"
+>
+  <m:content>
+    <m:Button 
+      icon="{visualisationPlugins>icon}"
+      tooltip="{visualisationPlugins>tooltip}"
+      app:visualisationname="{visualisationPlugins>name}"
+      press="onVisualisationButtonPressed"
+      enabled="false"
+      visible="false"
+    />
+  </m:content>
+</m:Toolbar>

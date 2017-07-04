@@ -1,0 +1,14 @@
+<mvc:View
+  xmlns="sap.m"
+  xmlns:m="sap.m"
+  xmlns:core="sap.ui.core"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns:tnt="sap.tnt"
+  xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+  controllerName="jubilant.components.app.App"
+  displayBlock="true"
+  class="sapUiSizeCompact"
+>
+  <App id="app">
+  </App>
+</mvc:View>
