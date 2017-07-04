@@ -1,0 +1,8 @@
+This product includes software developed at
+The Just-BI (http://just-bi.nl/).
+
+This software depends on Open UI5 (http://openui5.org/)
+UI5 is not included; rather, index.html links to it via cdn.
+
+The ODataMetadataGraph and ODataGraphVisualisation plugins depend on vis.js (http://visjs.org)
+Visjs is not included; rather, the plugins link to the lib dynamically via cdn.
