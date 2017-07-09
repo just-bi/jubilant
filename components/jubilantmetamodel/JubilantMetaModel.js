@@ -31,9 +31,19 @@ function(
    OperationMode
 ){
   var JulbilantMetaModel = JSONModel.extend("jubilant.components.jubilantmetamodel.JubilantMetaModel", {
-    constructor: function(oDataModel, callbacks, modelOptions){
+    constructor: function(oDataModel, callbacks, modelOptions, serviceData){
       JSONModel.call(this, {});
       this.setODataModel(oDataModel, callbacks, modelOptions);
+      this.setProperty("/" + this._serviceDataPath, {
+        SERVICE_URI: serviceData.SERVICE_URI,
+        LABEL: serviceData.LABEL,
+        "sap.ui.model.odata.v2.ODataModel.options": serviceData["sap.ui.model.odata.v2.ODataModel.options"]
+      });
+    },
+    _serviceDataPath: "serviceData",
+    getServiceData: function(){
+      var serviceData = this.getProperty("/" + this._serviceDataPath);
+      return serviceData;
     },
     //see: https://sapui5.hana.ondemand.com/#docs/api/symbols/sap.ui.model.odata.v2.ODataModel.html#constructor
     _defaultODataModelOptions: {

@@ -158,6 +158,11 @@ function(
         callback();
       }
     },
+    getFileExtension: function(){
+      var visualisationPluginDescriptor = this._visualisationPluginDescriptor;
+      var extension = visualisationPluginDescriptor.fileExtension || "jubi" + visualisationPluginDescriptor.name;
+      return extension;
+    },
     createNew: function(callback){
       this._loadLibraries(function(){
         var controller = this._createNewController();

@@ -31,8 +31,33 @@ function(
       var editorComponent = visualisationController._getVisualisationEditorComponent(this);
       return editorComponent;
     },
+    _getVisualisationStateModelPath: function(includeModelNamePrefix){
+      var path = "/visualisationEditorComponents";
+      var visualisationEditorComponentType = this.getMetadata().getName();
+      path += "/" + visualisationEditorComponentType;
+      if (includeModelNamePrefix) {
+        var controller = this._visualisationController;
+        var visualisationStateModelName = controller._getVisualisationStateModelName();
+        path = visualisationStateModelName + ">" + path;
+      }
+      return path;
+    },
+    _getVisualisationStateModel: function(){
+      var controller = this._visualisationController;
+      var model = controller._getVisualisationStateModel();
+      return model;
+    },
     _initModels: function(){
-      //noop. Override.
+      var visualisationStateModel = this._getVisualisationStateModel();
+      var path = "/visualisationEditorComponents";
+      if (!visualisationStateModel.getProperty(path)) {
+        visualisationStateModel.setProperty(path, {});
+      }
+      var visualisationEditorComponentType = this.getMetadata().getName();
+      path += "/" + visualisationEditorComponentType;
+      if (!visualisationStateModel.getProperty(path)) {
+        visualisationStateModel.setProperty(path, {});
+      }
     }
   });
   return BaseVisualisationEditorComponentManager;

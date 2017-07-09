@@ -6,6 +6,7 @@
     "description": "Graph of all OData entities and their relationships",
     "icon": "sap-icon://org-chart",
     "factory": "jubilant.components.visualisation.odatametadatagraph.ODataMetadataGraphFactory",
+    "version": "1.0",
     "hasAxes": false,
     "hasFilter": false,
     "libraries": {
@@ -23,6 +24,7 @@
     "description": "A table visualizes data as a variable number of rows, showing values along a fixed set of columns.",
     "icon": "sap-icon://table-view",
     "factory": "jubilant.components.visualisation.tablevisualisation.TableVisualisationFactory",
+    "version": "1.0",
     "axes":[
       {
         "id": "columns", 
@@ -38,6 +40,7 @@
     "description": "A tree table visualizes data as a variable number of nested rows, showing values along a fixed set of columns.",
     "icon": "sap-icon://tree",
     "factory": "jubilant.components.visualisation.treetablevisualisation.TreeTableVisualisationFactory",
+    "version": "1.0",
     "axes":[
       {
         "id": "columns", 
@@ -53,6 +56,7 @@
     "description": "The graph visualisation uses navigation properties to draw a graph of related data.",
     "icon": "sap-icon://share-2",
     "factory": "jubilant.components.visualisation.odatagraphvisualisation.ODataGraphVisualisationFactory",
+    "version": "0.1",
     "libraries": {
       "vis": {
         "path": "https://cdnjs.cloudflare.com/ajax/libs/vis/4.20.0/",

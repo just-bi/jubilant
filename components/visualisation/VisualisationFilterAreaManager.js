@@ -51,51 +51,55 @@ function(
   var VisualisationFilterAreaManager = BaseVisualisationEditorComponentManager.extend("jubilant.components.visualisation.VisualisationFilterAreaManager", {
     _sapExtensionsNamespace: "http://www.sap.com/Protocols/SAPData",
     _sapExtensionsNamespaceBase64: btoa("http://www.sap.com/Protocols/SAPData"),
-    _filterModelName: "filterModel", 
     _nodesPath: "nodes",
     _defaultRelationalOperatorId: "equals",
     _defaultLogicalOperatorId: "AND",
     constructor: function(visualisationController){
       BaseVisualisationEditorComponentManager.prototype.constructor.apply(this, arguments);
     },
-    _getFilterModel: function(){
-      var controller = this._visualisationController;
-      return controller.getModel(this._filterModelName);
-    },
     _clearFilter: function(){
-      var filterModel = this._getFilterModel();
-      var path = "/" + this._nodesPath + "/0";
-      filterModel.setProperty(path + "/" + this._nodesPath, []);
+      var visualisationStateModel = this._getVisualisationStateModel();
+      var path = this._getVisualisationStateModelPath() + "/0/" + this._nodesPath;
+      visualisationStateModel.setProperty(path, []);
       this._addRelationalFilterCondition(path);
     },
     _initModels: function(){
-      var filterModel = new JSONModel({
-        nodes: []
-      });
+      BaseVisualisationEditorComponentManager.prototype._initModels.apply(this, arguments);
       var controller = this._visualisationController;
-      controller.setModel(filterModel, this._filterModelName);
-      var path = this._addLogicalFilterCondition();
+      var visualisationStateModel = this._getVisualisationStateModel();
+      var path = this._getVisualisationStateModelPath();
+      visualisationStateModel.setProperty(path, {});
+      path = this._addLogicalFilterCondition();
       this._expandRow(0);
       this._addRelationalFilterCondition(path);
     },
     _addFilterCondition: function(data, parentPath, index){
-      var filterModel = this._getFilterModel();
-      parentPath = (parentPath || "");
-      var parent = filterModel.getProperty(parentPath) || {level: -1};
+      var visualisationStateModel = this._getVisualisationStateModel();
+      var path, parent;
+      if (parentPath) {
+        path = parentPath;
+      }
+      else {
+        path = this._getVisualisationStateModelPath();
+      }
+      var parent = parentPath ? visualisationStateModel.getProperty(path) : {level: -1};
       data.level = parent.level + 1;
       var nodes = parent[this._nodesPath];
-      parentPath = [parentPath, this._nodesPath].join("/");
+      if (path.charAt(path.length - 1) === "/") {
+        path = path.substr(0, path.length - 1);
+      }
+      parentPath = [path, this._nodesPath].join("/");
       if (!nodes) {
         nodes = [];
-        filterModel.setProperty(parentPath, nodes);
+        visualisationStateModel.setProperty(parentPath, nodes);
       }
       if (typeof(index) === "undefined") {
         parentPath = [parentPath, nodes.length].join("/");
-        filterModel.setProperty(parentPath, data);
+        visualisationStateModel.setProperty(parentPath, data);
       }
       else {
         nodes.splice(index, 0, data);
-        filterModel.setProperty(parentPath, nodes);
+        visualisationStateModel.setProperty(parentPath, nodes);
         parentPath = [parentPath, index].join("/");
       }
       return parentPath;
@@ -124,7 +128,9 @@ function(
       return control;
     },
     _getFilterRowBindingContext: function(row){
-      return row.getBindingContext(this._filterModelName);
+      var controller = this._visualisationController;
+      var visualisationStateModelName = controller._getVisualisationStateModelName()
+      return row.getBindingContext(visualisationStateModelName);
     },
     _combineFilters: function(filters, and){
       var filter;
@@ -211,8 +217,12 @@ function(
       return filter;
     },
     getFilter: function(){
-      var filterModel = this._getFilterModel();
-      var node = filterModel.getProperty("/" + this._nodesPath + "/0");
+      var visualisationStateModel = this._getVisualisationStateModel();      
+      var node = visualisationStateModel.getProperty([
+        this._getVisualisationStateModelPath(),
+        this._nodesPath,
+        0
+      ].join("/"));
       return this._getFilterForNode(node);
     },
     _expandRow: function(row){
@@ -241,18 +251,19 @@ function(
       var item = parseInt(parentPath.pop(), 10);
       parentPath = parentPath.join("/");
 
-      var node, filterModel = this._getFilterModel();      
-      if (parentPath === "/" + this._nodesPath) {
+      var node;
+      var visualisationStateModel = this._getVisualisationStateModel();      
+      if (parentPath === this._getVisualisationStateModelPath() + this._nodesPath) {
         //rootnode. Remove all its child nodes (= clear the entire filter)
         parentPath += "/0/" + this._nodesPath;
         nodes = [{relationalOperator: this._defaultRelationalOperatorId}];
       }
       else {
         //not a rootnode. Remove only this condition.
-        nodes = filterModel.getProperty(parentPath);
+        nodes = visualisationStateModel.getProperty(parentPath);
         nodes.splice(item, 1);
       }
-      filterModel.setProperty(parentPath, nodes);
+      visualisationStateModel.setProperty(parentPath, nodes);
     },
     _handleRemoveFilterPressed: function(row) {
       var bindingContext = this._getFilterRowBindingContext(row);
@@ -273,7 +284,7 @@ function(
       //current relational operator condition, which is to be promoted to a logical operator condition
       var filterCondition = bindingContext.getObject();
       //copy the current filtercondition:
-      var filterModel = this._getFilterModel();
+      var visualisationStateModel = this._getVisualisationStateModel();
       var relationalOperatorFilter = {};
       for (var p in filterCondition) {
         if (p === "level") {
@@ -281,12 +292,12 @@ function(
         }
         else {
           relationalOperatorFilter[p] = filterCondition[p];
-          filterModel.setProperty(path + "/" + p, undefined);
+          visualisationStateModel.setProperty(path + "/" + p, undefined);
         }
       }
-      filterModel.setProperty(path + "/" + "logicalOperator", "AND");
-      filterModel.setProperty(path + "/" + this._nodesPath, []);
-      filterModel.setProperty(path + "/" + this._nodesPath + "/" + 0, relationalOperatorFilter);
+      visualisationStateModel.setProperty(path + "/" + "logicalOperator", "AND");
+      visualisationStateModel.setProperty(path + "/" + this._nodesPath, []);
+      visualisationStateModel.setProperty(path + "/" + this._nodesPath + "/" + 0, relationalOperatorFilter);
       this._expandRow(row);
     },
     _checkFieldAgainstFilter: function(propertyDescriptor, fieldFilter){
@@ -371,6 +382,7 @@ function(
         return;
       }
       var controller = this._visualisationController;
+      var visualisationStateModelName = controller._getVisualisationStateModelName();
       var propertyDescriptor = controller._getPropertyDescriptor(selectedField);
       var dataTypeDescriptor = controller._getODataTypeDescriptor(propertyDescriptor);
 
@@ -383,7 +395,7 @@ function(
         if (control instanceof Input) {
           control.unbindValue();
           control.bindValue({
-            model: this._filterModelName,
+            model: visualisationStateModelName,
             path: "value1",
             type: dataTypeDescriptor.sapUi5Type
           });
@@ -413,7 +425,8 @@ function(
       var relationalOperatorDescriptor = controller._getRelationalOperatorDescriptor(selectedRelationalOperator);
       if (typeof(relationalOperatorDescriptor.value1) !== "undefined") {
         var bindingContext = this._getFilterRowBindingContext(row);
-        this._getFilterModel().setProperty(bindingContext.getPath() + "/value1", relationalOperatorDescriptor.value1);
+        var visualisationStateModel = this._getVisualisationStateModel();
+        visualisationStateModel.setProperty(bindingContext.getPath() + "/value1", relationalOperatorDescriptor.value1);
       }
     },
     _handleRelationalOperatorChanged: function(row){

@@ -17,38 +17,21 @@
 sap.ui.define([
   "jubilant/components/visualisation/tablevisualisation/TableVisualisation.controller",
   "jubilant/components/visualisation/BaseVisualisationController",
-  "sap/ui/model/Filter",
-  "sap/ui/model/FilterOperator",
   "sap/ui/model/json/JSONModel",
   "sap/ui/model/odata/CountMode"
 ], 
 function(
   TableVisualisation,
   BaseVisualisationController,
-  Filter,
-  FilterOperator,
   JSONModel,
   CountMode
 ){
   "use strict";
   var controller = TableVisualisation.extend("jubilant.components.visualisation.treetablevisualisation.TreeTableVisualisation", {
-    _hierarchyConditionModelName: "hierarchyConditionModel",
+    _nodesPath: "nodes",
     _localDataModelName: "localData",
     _getDataModelName: function(){
       return this._localDataModelName;
-    },
-    _nodesPath: "nodes",
-    _getHierarchyConditionModel: function(){
-      var model = this.getModel(this._hierarchyConditionModelName);
-      return model;
-    },
-    _initHierarchyConditionModel: function(){
-      var model = new JSONModel();      
-      this.setModel(model, this._hierarchyConditionModelName);
-      model.setProperty("/" + this._nodesPath, [{
-        relationalOperator: "equals"
-      }]);
-      return model;
     },
     _getLocalDataModel: function(){
       var model = this.getModel(this._localDataModelName);
@@ -61,50 +44,30 @@ function(
     },
     _initModels: function(){
       TableVisualisation.prototype._initModels.apply(this, arguments);
-      this._initHierarchyConditionModel();
       this._initLocalDataModel();
     },
-    _getHierarchyCondition: function(){
-      var hierarchyConditionModel = this._getHierarchyConditionModel();      
-      var hierarchyCondition = hierarchyConditionModel.getProperty("/" + this._nodesPath + "/0");
-      return hierarchyCondition;
+    _normalizePath: function(path){
+      if (!path) {
+        path = "";
+      }
+      if (path.charAt(path.length-1) !== "/"){
+        path += "/";
+      }
+      return path;
     },
-    _getHierarchyConditionFilter: function(parentKeyValue){
-      var hierarchyCondition = this._getHierarchyCondition();
-      if (!hierarchyCondition.parentKeyField || !hierarchyCondition.keyField) {
-        return null;
-      }
-      var hierarchyConditionFilter = new Filter({
-        path: hierarchyCondition.parentKeyField,
-        operator: FilterOperator.EQ,
-        value1: parentKeyValue
-      });
-      return hierarchyConditionFilter ;
-    },
-    _loadChildNodes: function(callback, parentPath){
-      if (!parentPath) {
-        parentPath = "";
-      }
-      if (parentPath.charAt(parentPath.length-1) !== "/"){
-        parentPath += "/";
-      }
+    _getFilter: function(parentPath){
       var localDataModel = this.getModel(this._localDataModelName);
-      
-      var filters = [];
-      
-      var parentKeyValue;
       var parent = localDataModel.getProperty(parentPath);
-      var hierarchyCondition = this._getHierarchyCondition();
-      if (!parent) {
-        parentKeyValue = null;
-      }
-      else {
-        parentKeyValue = parent[hierarchyCondition.keyField];
-      }
-      
-      var hierarchyConditionFilter = this._getHierarchyConditionFilter(parentKeyValue);
+
+      var visualisationHierarchyConditionAreaManager = this._getVisualisationEditorComponentManager("VisualisationHierarchyConditionAreaManager");
+      var hierarchyCondition = visualisationHierarchyConditionAreaManager._getHierarchyCondition();
+
+      var parentKeyValue = parent ? parent[hierarchyCondition.keyField] : null;
+      var hierarchyConditionFilter = visualisationHierarchyConditionAreaManager._getHierarchyConditionFilter(parentKeyValue);
+
+      var filters = [];
       if (hierarchyConditionFilter) {
-        filters = [hierarchyConditionFilter];
+        filters.push(hierarchyConditionFilter);
       }
 
       var visualisationFilterAreaManager = this._getVisualisationEditorComponentManager("VisualisationFilterAreaManager");
@@ -112,21 +75,36 @@ function(
       if (filter) {
         filters.push(filter);
       }
-      
+      return filters;
+    },
+    _getSelect: function(){
       var visualisationAxesAreaManager = this._getVisualisationEditorComponentManager("VisualisationAxesAreaManager");
       var select = visualisationAxesAreaManager.getSelectedAxisItems(this._columnAxisId).map(function(item){
         return item.getKey();
       });
-      if (select.indexOf(hierarchyCondition.keyField) === -1) {
-        select.push(hierarchyCondition.keyField);
+      
+      var visualisationHierarchyConditionAreaManager = this._getVisualisationEditorComponentManager("VisualisationHierarchyConditionAreaManager");
+      var hierarchyCondition = visualisationHierarchyConditionAreaManager._getHierarchyCondition();
+      if (hierarchyCondition) {
+        if (hierarchyCondition.keyField && select.indexOf(hierarchyCondition.keyField) === -1) {
+          select.push(hierarchyCondition.keyField);
+        }
+        if (hierarchyCondition.parentKeyField && select.indexOf(hierarchyCondition.parentKeyField) === -1) {
+          select.push(hierarchyCondition.parentKeyField);
+        }
       }
-      if (select.indexOf(hierarchyCondition.parentKeyField) === -1) {
-        select.push(hierarchyCondition.parentKeyField);
-      }
-
+      return select;
+    },
+    _getSorters: function(){
       var sorters;
       var visualisationSortAreaManager = this._getVisualisationEditorComponentManager("VisualisationSortAreaManager");
       sorters = visualisationSortAreaManager.getSorters();
+      return sorters;
+    },
+    _loadChildNodes: function(callback, parentPath){
+      var filters = this._getFilter(parentPath);
+      var select = this._getSelect();
+      var sorters = this._getSorters();
       
       var dataModel = this.getModel(BaseVisualisationController.prototype._dataModelName);
       dataModel.read(this._getEntitySetPath(), {
@@ -139,12 +117,13 @@ function(
           oData.results.forEach(function(node){
             node[this._nodesPath] = this._dummy;
           }.bind(this));
-          localDataModel.setProperty(parentPath + this._nodesPath, oData.results);
+          var localDataModel = this.getModel(this._localDataModelName);
+          localDataModel.setProperty(this._normalizePath(parentPath) + this._nodesPath, oData.results);
           callback();
         }.bind(this),
         error: function(error){
           callback();
-          this._showMessageToast("Error loading");
+          this._showMessageToast(this.getTextFromI18n("errorLoading"));
         }.bind(this)
       });
     },

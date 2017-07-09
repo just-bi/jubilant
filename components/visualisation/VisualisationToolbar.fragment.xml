@@ -14,13 +14,58 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-<Bar
-	xmlns="sap.m"
+<m:Bar
 	xmlns:m="sap.m"
+	xmlns:u="sap.ui.unified"
+  xmlns:core="sap.ui.core"
   id="visualisationToolbar"
 >
-  <contentLeft>
-    <ToggleButton 
+  <m:contentLeft>
+    <m:Button
+      id="btnOpen"
+      icon="sap-icon://open-folder"
+      tooltip="{i18n>btnOpen.tooltip}"
+      press="onOpenPressed"
+    />
+    <m:ResponsivePopover
+      id="fileopenPopover"
+      icon="sap-icon://open-folder"
+      modal="true"
+      title="{i18n>fileOpenPopOver.title}"
+    >
+      <m:content>
+        <!-- 
+          Ugly. See if we can at some point leverage this http://jsfiddle.net/barney/uxPjN/
+        -->
+        <u:FileUploader
+          multiple="false"
+          class="sapUiTinyMargin"
+          icon="sap-icon://folder-open"
+          fileType="{
+            path: 'visualisationState>/',
+            formatter: '.getFileTypes'
+          }"
+          change="onFileUploaderChanged"
+          buttonText="{i18n>fileUploader.buttonText}"
+          placeholder="{i18n>fileUploader.placeholder}"
+        />    
+      </m:content>
+      <m:endButton>
+        <m:Button 
+          id="closeFileOpenPopover"
+          tooltip="{i18n>closeFileOpenPopover.tooltip}"
+          text="{i18n>closeFileOpenPopover.text}"
+          press="onCloseFileOpenPopover"
+        />
+      </m:endButton>
+    </m:ResponsivePopover>
+		<m:Button 
+		  id="btnSave"
+		  icon="sap-icon://save"
+		  tooltip="{i18n>btnSave.tooltip}"
+		  press="onSavePressed"
+		/>
+    <m:ToggleButton 
       id="btnAutoRun"
       icon="sap-icon://synchronize"
       tooltip="{i18n>btnAutoRun.tooltip}"
@@ -28,7 +73,7 @@
       pressed="{visualisationState>/autoRun}"
 		  enabled="{= ${visualisationState>/busy} === false }"
     />
-		<Button 
+		<m:Button 
 		  id="btnRun"
 		  icon="sap-icon://refresh"
 		  tooltip="{i18n>btnRun.tooltip}"
@@ -36,26 +81,26 @@
 		  enabled="{= ${visualisationState>/busy} === false &amp;&amp; ${visualisationState>/queryValid} === true &amp;&amp; ${visualisationState>/queryChanged} === true }"
       visible="{= ${visualisationState>/autoRun} === false }"
 		/>
-		<Button 
+		<m:Button 
 		  id="btnCancel"
 		  icon="sap-icon://cancel"
 		  tooltip="{i18n>btnCancel.tooltip}"
 		  press="onCancelPressed"
 		  enabled="{= ${visualisationState>/busy} === true }"
 		/>
-		<Button 
+		<m:Button 
 		  id="btnClear"
 		  icon="sap-icon://decline"
 		  tooltip="{i18n>btnClear.tooltip}"
 		  press="onClearPressed"
 		  enabled="{= ${visualisationState>/busy} === false }"
 		/>
-  </contentLeft>
-  <contentMiddle>
-    <Label 
+  </m:contentLeft>
+  <m:contentMiddle>
+    <m:Label 
       text="{= ${visualisationState>/rowCount} ? ${i18n>rowCount} + ': ' + ${visualisationState>/rowCount} : ''}"
     />
-  </contentMiddle>
-  <contentRight>
-  </contentRight>
-</Bar>       
+  </m:contentMiddle>
+  <m:contentRight>
+  </m:contentRight>
+</m:Bar>       

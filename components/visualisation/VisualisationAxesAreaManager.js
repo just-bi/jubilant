@@ -36,6 +36,7 @@ function(
       return controller.getModel(this._axesModelName);
     },    
     _initModels: function(){
+      BaseVisualisationEditorComponentManager.prototype._initModels.apply(this, arguments);
       var axesModel;
       var controller = this._visualisationController;
       var visualisationPluginDescriptor = controller.getVisualisationPluginDescriptor();
@@ -186,6 +187,24 @@ function(
       axesModel.setProperty(path, axis);
       return path;
     },
+    _initAxesBinding: function(){
+      var boundProperty = "selectedKeys";
+      var visualisationStateModel = this._getVisualisationStateModel();
+      var path = this._getVisualisationStateModelPath() + "/axes";
+      if (!visualisationStateModel.getProperty(path)) {
+        visualisationStateModel.setProperty(path, {});
+      }
+      var axes = this._getAxes();
+      var controller = this._visualisationController;
+      var pathPrefix = controller._getVisualisationStateModelName() + ">"; 
+      axes.forEach(function(axis){
+        var axisId = axis.id;
+        var p = path + "/" + axisId;
+        visualisationStateModel.setProperty(p, {});
+        var comboBox = this._getAxisUiComboBox(axisId);
+        comboBox.bindProperty(boundProperty, {path: pathPrefix + p + "/" + boundProperty});
+      }.bind(this));
+    },
     initAxes: function(){
       var controller = this._visualisationController;
       var visualisationPluginDescriptor = controller.getVisualisationPluginDescriptor();
@@ -201,6 +220,7 @@ function(
         controller._createAxes();
         visualisationPluginDescriptor.axesModel = this._getAxesModel();
       }
+      this._initAxesBinding();
     },
     _createAxes: function(){
       var controller = this._visualisationController;
