@@ -31,9 +31,16 @@
     path: 'visualisationState>/visualisationEditorComponents/jubilant.components.visualisation.treetablevisualisation.VisualisationHierarchyConditionAreaManager/nodes'
   }"
 >
-  <t:title>
-    <m:Label text="{i18n>hierarchyConditionTable.title.label.text}:"/>
-  </t:title>
+  <t:toolbar>
+    <m:Toolbar>
+      <m:Button 
+        tooltip="{i18n>clearHierarchyConditionButton.tooltip}"
+        icon="sap-icon://decline"
+        press="onClearHierarchyConditionButtonPressed"
+      />
+      <m:Label text="{i18n>hierarchyConditionTable.title.label.text}:"/>
+    </m:Toolbar>
+  </t:toolbar>
   <t:columns>
     <t:Column name="keyColumn">
       <m:Label text="{i18n>hierarchyConditionTable.columns.keyColumn.label.text}"/>
