@@ -14,8 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-<VBox
-	xmlns="sap.m"
+<m:VBox
 	xmlns:m="sap.m"
 	xmlns:core="sap.ui.core"
 	xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
@@ -26,43 +25,44 @@
   app:visualisationEditorComponentIcon="sap-icon://chart-axis"
   tooltip="{i18n>axesLabel.text}"
 >
-  <items>
-    <Label text="{i18n>axesLabel.text}:"/>
-    <VBox
+  <m:items>
+  
+    <m:Label text="{i18n>axesLabel.text}:"/>
+    <m:VBox
       id="axes"
       items="{
         path: 'axesModel>/',
         templateShareable: false
       }"
     >
-      <items>
-        <VBox
+      <m:items>
+        <m:VBox
           width="100%"
           app:axisId="{axesModel>id}"
         >
-          <HBox>
-            <Button
+          <m:HBox>
+            <m:Button
               app:buttonId="addAll"
               enabled="true"
               icon="sap-icon://add"
               tooltip="{i18n>btnAddAllToAxis.tooltip}"
               press="onAddAllToAxisPressed"
             />
-            <Button
+            <m:Button
               app:buttonId="clearAxis"
               enabled="false"
               icon="sap-icon://decline"
               tooltip="{i18n>btnRemoveAllFromAxis.tooltip}"
               press="onRemoveAllFromAxisPressed"
             />
-            <Label
+            <m:Label
               id="label"
               text="{axesModel>label}:"
               labelFor="comboBox"
               class="sapUiTinyMargin"
             />
-          </HBox>
-          <MultiComboBox
+          </m:HBox>
+          <m:MultiComboBox
             id="comboBox"
             placeholder="{i18n>axisComboBox.placeholder}"
             selectionFinish="onAxisChanged"
@@ -78,9 +78,9 @@
                 formatter: '.getLabelTextForPropertyDescriptor'
               }"
             />
-          </MultiComboBox>
-        </VBox>
-      </items>
-    </VBox>
-  </items>
-</VBox>
+          </m:MultiComboBox>
+        </m:VBox>
+      </m:items>
+    </m:VBox>
+  </m:items>
+</m:VBox>
