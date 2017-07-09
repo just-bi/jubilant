@@ -1,17 +1,30 @@
+/**
+*  Copyright 2017 Roland.Bouman@gmail.com; Just-BI.nl
+*
+*  Licensed under the Apache License, Version 2.0 (the "License");
+*  you may not use this file except in compliance with the License.
+*  You may obtain a copy of the License at
+*
+*      http://www.apache.org/licenses/LICENSE-2.0
+*
+*  Unless required by applicable law or agreed to in writing, software
+*  distributed under the License is distributed on an "AS IS" BASIS,
+*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+*  See the License for the specific language governing permissions and
+*  limitations under the License.
+*
+*/
 sap.ui.define([
   "jubilant/components/visualisation/BaseVisualisationEditorComponentManager",
   "sap/ui/model/Sorter",
-  "sap/ui/model/json/JSONModel",
   "sap/ui/table/Row"
 ], 
 function(
    BaseVisualisationEditorComponentManager,
    Sorter,
-   JSONModel,
    Row
 ){
   var VisualisationSortAreaManager = BaseVisualisationEditorComponentManager.extend("jubilant.components.visualisation.VisualisationSortAreaManager", {
-    _sortModelName: "sortModel",
     constructor: function(visualisationController){
       BaseVisualisationEditorComponentManager.prototype.constructor.apply(this, arguments);
     },
@@ -21,19 +34,11 @@ function(
         "descending": false
       };
     },
-    _initSortModelData: function(){
-      this._getSortModel().setData([this._getNewSortColumnData()]);
-    },
     _initModels: function(){
-      var sortModel = new JSONModel();
-      var visualisationController = this._visualisationController;
-      visualisationController.setModel(sortModel, this._sortModelName);
-      this._initSortModelData();
-    },
-    _getSortModel: function(){
-      var visualisationController = this._visualisationController;
-      var model = visualisationController.getModel(this._sortModelName);
-      return model;
+      BaseVisualisationEditorComponentManager.prototype._initModels.apply(this, arguments);
+      var visualisationStateModel = this._getVisualisationStateModel();
+      var path = this._getVisualisationStateModelPath() + "/items";
+      visualisationStateModel.setProperty(path, [this._getNewSortColumnData()]);
     },
     _getSortModelRowForEvent: function(event){
       var control = event.getSource();
@@ -44,16 +49,34 @@ function(
       return control;
     },
     _getSortRowBindingContext: function(row){
-      return row.getBindingContext(this._sortModelName);
+      var controller = this._visualisationController;
+      var visualisationStateModelName = controller._getVisualisationStateModelName();
+      return row.getBindingContext(visualisationStateModelName);
     },
     _handleSortDirectionButtonPressed: function(row) {
       var rowContext = this._getSortRowBindingContext(row);
-      var sortModel = this._getSortModel();
-      sortModel.setProperty(rowContext.getPath() + "/descending", !rowContext.getObject().descending);
+      var visualisationStateModel = this._getVisualisationStateModel();
+      visualisationStateModel.setProperty(rowContext.getPath() + "/descending", !rowContext.getObject().descending);
     },
     handleSortDirectionButtonPressed: function(event) {
       var row = this._getSortModelRowForEvent(event);
       this._handleSortDirectionButtonPressed(row);
+    },
+    _getSortColumnsPath: function(){
+      var path = this._getVisualisationStateModelPath() + "/items";
+      return path;
+    },
+    _getSortColumns: function(){
+      var controller = this._visualisationController;
+      var visualisationStateModel = controller._getVisualisationStateModel();
+      var path = this._getSortColumnsPath();
+      var sortColumns = visualisationStateModel.getProperty(path);
+      return sortColumns;
+    },
+    _setSortColumns: function(sortColumns){
+      var visualisationStateModel = this._getVisualisationStateModel();
+      var path = this._getVisualisationStateModelPath() + "/items";
+      visualisationStateModel.setProperty(path, sortColumns);
     },
     _moveSortColumn: function(row, positions){
       var rowContext = this._getSortRowBindingContext(row);
@@ -63,8 +86,8 @@ function(
         //can't move further up
         return;
       }
-      var sortModel = this._getSortModel();
-      var sortColumns = sortModel.getProperty("/");
+      var controller = this._visualisationController;
+      var sortColumns = this._getSortColumns();
       if (index === sortColumns.length - 1 && positions > 0) {
         //can't move further down
         return;
@@ -72,7 +95,7 @@ function(
       var object = sortColumns[index];
       sortColumns.splice(index, 1);
       sortColumns.splice(index + positions, 0, object);
-      sortModel.setProperty("/", sortColumns);
+      this._setSortColumns(sortColumns)
     },
     _handleSortColumnUpButtonPressed: function(row) {
       this._moveSortColumn(row, -1);
@@ -92,10 +115,10 @@ function(
       var rowContext = this._getSortRowBindingContext(row);
       var path = rowContext.getPath().split("/");
       var index = parseInt(path.pop(), 10) + 1;
-      var sortModel = this._getSortModel();
-      var sortColumns = sortModel.getProperty("/");
+      var path = this._getVisualisationStateModelPath() + "/items";
+      var sortColumns = this._getSortColumns();
       sortColumns.splice(index, 0, this._getNewSortColumnData());
-      sortModel.setProperty("/", sortColumns);
+      this._setSortColumns(sortColumns)
     },
     handleAddSortColumnButtonPressed: function(event){
       var row = this._getSortModelRowForEvent(event);
@@ -105,15 +128,15 @@ function(
       var rowContext = this._getSortRowBindingContext(row);
       var path = rowContext.getPath().split("/");
       var index = parseInt(path.pop(), 10);
-      var sortModel = this._getSortModel();
-      var sortColumns = sortModel.getProperty("/");
+      var sortColumns = this._getSortColumns();
       if (sortColumns.length > 1) {
         sortColumns.splice(index, 1);
       }
       else {
         delete sortColumns[0].field;
       }
-      sortModel.setProperty("/", sortColumns);
+      this._setSortColumns(sortColumns);
+      visualisationStateModel.setProperty(path, sortColumns);
     },
     handleRemoveSortColumnButtonPressed: function(event){
       var row = this._getSortModelRowForEvent(event);
@@ -121,8 +144,7 @@ function(
     },
     getSorters: function(){
       var sorters = [];
-      var sortModel = this._getSortModel();
-      var sortColumns = sortModel.getProperty("/");
+      var sortColumns = this._getSortColumns();
       if (sortColumns && sortColumns.length) {
         sortColumns.forEach(function(sortColumn){
           var sortClause;

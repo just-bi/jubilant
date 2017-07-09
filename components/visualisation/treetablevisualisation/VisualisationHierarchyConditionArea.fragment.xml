@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+   Copyright 2017 Roland.Bouman@gmail.com, just-bi.nl
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<t:Table 
+  xmlns:m="sap.m"
+  xmlns:core="sap.ui.core"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns:t="sap.ui.table"
+  xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+  app:visualisationEditorComponentDefaultVisible="true"
+  app:visualisationEditorComponent="jubilant.components.visualisation.treetablevisualisation.VisualisationHierarchyConditionAreaManager"
+  app:visualisationEditorComponentIcon="sap-icon://tree"
+  tooltip="{i18n>hierarchyConditionTable.title.label.text}"
+  id="hierarchyConditionTable"
+  selectionMode="None"
+  visibleRowCount="1"
+  rows="{
+    path: 'visualisationState>/visualisationEditorComponents/jubilant.components.visualisation.treetablevisualisation.VisualisationHierarchyConditionAreaManager/nodes'
+  }"
+>
+  <t:title>
+    <m:Label text="{i18n>hierarchyConditionTable.title.label.text}:"/>
+  </t:title>
+  <t:columns>
+    <t:Column name="keyColumn">
+      <m:Label text="{i18n>hierarchyConditionTable.columns.keyColumn.label.text}"/>
+      <t:template>
+        <m:ComboBox
+          width="100%"
+          items="{
+            path: 'entitySetDescriptorModel>/type/properties',
+            filters: [{
+              path: '',
+              test: '._isPropertyFilterable'
+            }],
+            sorter: {
+              path: 'oDataProperty/name'
+            },
+            templateShareable: false
+          }"
+          selectedKey="{visualisationState>keyField}"
+          selectionChange="onKeyFieldChanged"
+          tooltip="{i18n>hierarchyConditionTable.keyComboBox.tooltip}"
+          placeholder="{i18n>hierarchyConditionTable.keyComboBox.placeholder}"
+        >
+          <core:ListItem
+            key="{entitySetDescriptorModel>oDataProperty/name}"
+            text="{
+              path: 'entitySetDescriptorModel>',
+              formatter: '.getLabelTextForPropertyDescriptor'
+            }"
+          />
+        </m:ComboBox>
+      </t:template>
+    </t:Column>
+    <t:Column name="relationalOperatorColumn">
+      <m:Label text="{i18n>hierarchyConditionTable.columns.relationalOperatorColumn.label.text}"/>
+      <t:template>
+        <m:Text text="="/>
+      </t:template>
+    </t:Column>
+    <t:Column name="parentKeyColumn">
+      <m:Label text="{i18n>hierarchyConditionTable.columns.parentKeyColumn.label.text}"/>
+      <t:template>
+        <m:ComboBox
+          width="100%"
+          items="{
+            path: 'entitySetDescriptorModel>/type/properties',
+            filters: [{
+              path: '',
+              test: '._isPropertyFilterable'
+            }],
+            sorter: {
+              path: 'oDataProperty/name'
+            },
+            templateShareable: false
+          }"
+          selectedKey="{visualisationState>parentKeyField}"
+          selectionChange="onParentKeyFieldChanged"
+          tooltip="{i18n>hierarchyConditionTable.parentKeyComboBox.tooltip}"
+          placeholder="{i18n>hierarchyConditionTable.parentKeyComboBox.placeholder}"
+        >
+          <core:ListItem
+            key="{entitySetDescriptorModel>oDataProperty/name}"
+            text="{
+              path: 'entitySetDescriptorModel>',
+              formatter: '.getLabelTextForPropertyDescriptor'
+            }"
+          />
+        </m:ComboBox>
+      </t:template>
+    </t:Column>
+  </t:columns>
+</t:Table>

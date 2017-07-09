@@ -1,3 +1,19 @@
+/**
+*  Copyright 2017 Roland.Bouman@gmail.com; Just-BI.nl
+*
+*  Licensed under the Apache License, Version 2.0 (the "License");
+*  you may not use this file except in compliance with the License.
+*  You may obtain a copy of the License at
+*
+*      http://www.apache.org/licenses/LICENSE-2.0
+*
+*  Unless required by applicable law or agreed to in writing, software
+*  distributed under the License is distributed on an "AS IS" BASIS,
+*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+*  See the License for the specific language governing permissions and
+*  limitations under the License.
+*
+*/
 sap.ui.define([
   "jubilant/components/basecontroller/BaseController",
   "jubilant/components/visualisation/VisualisationControlFactory",
@@ -6,7 +22,9 @@ sap.ui.define([
   "sap/m/ToggleButton",
   "sap/ui/base/Event",
   "sap/ui/core/Element",
-  "sap/m/MessageToast"
+  "sap/m/MessageToast",
+  "sap/ui/core/util/File",
+  "jubilant/components/jubilantmetamodel/JubilantMetaModel"
 ], 
 function(
   BaseController,
@@ -16,11 +34,16 @@ function(
   ToggleButton,
   Event,
   Element,
-  MessageToast
+  MessageToast,
+  File,
+  JubilantMetaModel
 ){
   "use strict";
   var controller = BaseController.extend("jubilant.components.visualisation.BaseVisualisationController", {
     _visualisationStateModelName: "visualisationState",
+    _getVisualisationStateModelName: function(){
+      return this._visualisationStateModelName;
+    },
     _initialVisualisationState: {
       autoRun: false,
       autoRunDelay: 1000,
@@ -58,23 +81,11 @@ function(
       model.setProperty("/queryChanged", changed);
       this._setQueryValid();
     },
-    _getFilterChanged: function(){
-      var model = this._getVisualisationStateModel();
-      return model.getProperty("/filterChanged");
-    },
     _setFilterChanged: function(changed){
       this._setQueryChanged(changed);
     },
-    _getAxesChanged: function(){
-      var model = this._getVisualisationStateModel();
-      return model.getProperty("/axesChanged");
-    },
     _setAxesChanged: function(changed){
       this._setQueryChanged(changed);
-    },
-    _getSortingChanged: function(){
-      var model = this._getVisualisationStateModel();
-      return model.getProperty("/sortingChanged");
     },
     _setSortingChanged: function(changed){
       this._setQueryChanged(changed);
@@ -158,6 +169,9 @@ function(
       return controlId;
     },
     _getVisualisationEditorComponentManager: function(editorComponentManagerId){
+      if (!this._visualisationEditorComponents){
+        return;
+      }
       switch (typeof(editorComponentManagerId)){
         case "object":
           if (editorComponentManagerId instanceof Event) {
@@ -214,7 +228,7 @@ function(
         var icon = visualisationEditorComponent.data("visualisationEditorComponentIcon");
         var toggleButton = new ToggleButton({icon: icon});
         var visibilityBindingInfo = {
-          path: this._visualisationStateModelName + ">" + visibilityPropertyPath
+          path: this._getVisualisationStateModelName() + ">" + visibilityPropertyPath
         };
         toggleButton.bindProperty("pressed", JSON.parse(JSON.stringify(visibilityBindingInfo)));
         visualisationEditorComponent.bindProperty("visible", JSON.parse(JSON.stringify(visibilityBindingInfo)));
@@ -255,7 +269,7 @@ function(
       var visualisationStateModel = new JSONModel();
       var data = JSON.parse(JSON.stringify(this._initialVisualisationState));
       visualisationStateModel.setData(data);
-      this.setModel(visualisationStateModel, this._visualisationStateModelName);
+      this.setModel(visualisationStateModel, this._getVisualisationStateModelName());
     },
     _initModels: function(){
       BaseController.prototype._initModels.apply(this, arguments);
@@ -264,7 +278,7 @@ function(
       this.setModel(entitySetDescriptorModel, this._entitySetDescriptorModel);
     },
     _getVisualisationStateModel: function(){
-      return this.getModel(this._visualisationStateModelName);
+      return this.getModel(this._getVisualisationStateModelName());
     },
     onClearFilterButtonPressed: function(event){
       var visualisationFilterAreaManager = this._getVisualisationEditorComponentManager(event);
@@ -681,6 +695,168 @@ function(
         visible = false;
       }
       return visible;
+    },
+    getFileName: function(){
+      var fileName = this._fileName;
+      if (!fileName){
+        var dataFoundation = this._dataFoundation;
+        var jubilantMetaModel = dataFoundation.jubilantMetaModel;
+        var serviceData = jubilantMetaModel.getServiceData();
+        var service = serviceData.LABEL;
+        var entitySetDescriptorModel = this._getEntitySetDescriptorModel();
+        var entityName = entitySetDescriptorModel.getProperty("/oDataEntitySet/name");
+        fileName = service + " - " + entityName;
+      }
+      return fileName;
+    },
+    getVisualisationStateData: function(){
+      var data = {};
+      
+      var visualisationPluginDescriptor = this.getVisualisationPluginDescriptor();
+      data.plugin = {
+        name: visualisationPluginDescriptor.name,
+        factory: visualisationPluginDescriptor.factory,
+        version: visualisationPluginDescriptor.version
+      };
+      
+      var dataFoundation = this._dataFoundation;
+      data.dataFoundation = {
+        service: dataFoundation.jubilantMetaModel.getServiceData(),
+        entitySetName: dataFoundation.entitySetDescriptor.oDataEntitySet.name 
+      };
+      
+      var visualisationStateModel = this._getVisualisationStateModel();
+      var visualisationState = visualisationStateModel.getData();
+      var prop;
+      for (prop in this._initialVisualisationState){
+      //  delete visualisationState[prop];
+      }
+      data.visualisationState = visualisationState;
+      return data;
+    },
+    _getFileOpenPopover: function(){
+      return this.byId("fileopenPopover");
+    },
+    onOpenPressed: function(event){
+      var button = event.getSource();
+      this._getFileOpenPopover().openBy(button);
+    },
+    closeFileOpenPopover: function(){
+      this._getFileOpenPopover().close();
+    },
+    onCloseFileOpenPopover: function(event){
+      this.closeFileOpenPopover();
+    },
+    _doLoad: function(data, jubilantMetaModel){
+      var loadedDataFoundation = data.dataFoundation;
+      var entitySetName = loadedDataFoundation.entitySetName;
+      var entitySetDescriptor = jubilantMetaModel._getEntitySetDescriptor(entitySetName);
+
+      this.setDataFoundation({
+        model: jubilantMetaModel.getODataModel(), 
+        entitySetDescriptor: entitySetDescriptor,
+        jubilantMetaModel: jubilantMetaModel
+      });
+      
+      var visualisationStateModel = this._getVisualisationStateModel();
+      visualisationStateModel.setData(data.visualisationState);
+      this.closeFileOpenPopover();
+      this._setQueryChanged(true);
+    },
+    load: function(json){
+      var data;
+      try {
+        data = JSON.parse(json);
+      }
+      catch (e) {
+        this._showMessageToast(this.getTextFromI18n("fileOpen.errorParsingFile"));
+        return;
+      }
+      if (!data) {
+        this._showMessageToast(this.getTextFromI18n("fileOpen.errorFileContainsNoData"));
+        return;
+      }
+      var plugindata = data.plugin;
+      if (!plugindata) {
+        this._showMessageToast(this.getTextFromI18n("fileOpen.errorFilePluginDataNotFound"));
+        return;
+      }
+      var visualisationPluginDescriptor = this.getVisualisationPluginDescriptor();
+      if (plugindata.version !== visualisationPluginDescriptor.version) {
+        this._showMessageToast(this.getTextFromI18n("fileOpen.errorFileIncompatibleVersion"));
+        return;
+      }
+      
+      var loadedDataFoundation = data.dataFoundation;
+      var serviceUri = loadedDataFoundation.service.SERVICE_URI;
+      var service, servicesModel = this.getModel("oDataServices");
+      var services = servicesModel.getProperty("/oDataServices");
+      var jubilantMetaModel;
+      services.some(function(dataService){
+        if (dataService.SERVICE_URI === serviceUri) {
+          service = dataService;
+          if (dataService.jubilantMetaModel) {
+            jubilantMetaModel = dataService.jubilantMetaModel;
+            return true;
+          }
+        }
+      });
+      
+      if (jubilantMetaModel) {
+        this._doLoad(data, jubilantMetaModel);
+      }
+      else {
+        var modelOptions = service["sap.ui.model.odata.v2.ODataModel.options"];
+        jubilantMetaModel = new JubilantMetaModel(serviceUri, {
+          success: function(){
+            if (service) {
+              service.jubilantMetaModel = jubilantMetaModel;
+              service.oDataModel = jubilantMetaModel.getODataModel();
+            }
+            this._doLoad(data, jubilantMetaModel);
+          }.bind(this),
+          error: function(){
+            app.setBusy(false);
+            MessageToast.show(this.getTextFromI18n("metadataFailed.message"));
+          }.bind(this)
+        }, modelOptions, service);
+      }
+      
+    },
+    onFileUploaderChanged: function(event) {
+      var files = event.getParameter("files");
+      if (files.length === 0) {
+        this._getFileOpenPopover().close();
+      }
+      var file = files[0];
+      var fileName = file.name;
+      var nameParts = fileName.split(".");
+      if (nameParts.pop() !== this.getFileExtension()) {
+        this._showMessageToast(this.getTextFromI18n("fileOpen.invalidFileExtension"));
+      }
+      var reader = new FileReader();
+      reader.onload = function(fileLoadedEvent){
+        var result = fileLoadedEvent.target.result;
+        this.load(result);
+      }.bind(this);
+      reader.readAsText(file);
+    },
+    getFileExtension: function(){
+      var visualisationPluginDescriptor = this.getVisualisationPluginDescriptor();
+      var factoryObject = visualisationPluginDescriptor.factoryObject;
+      var extension = factoryObject.getFileExtension();
+      return extension;
+    },
+    getFileTypes: function(){
+      return [this.getFileExtension()];
+    },
+    onSavePressed: function(event){
+      var visualisationStateData = this.getVisualisationStateData();
+      var json = JSON.stringify(visualisationStateData, null, 2);
+      var fileName = this.getFileName();
+      var visualisationPluginDescriptor = this.getVisualisationPluginDescriptor();      
+      var extension = this.getFileExtension();
+      File.save(json, fileName, extension, "application/json", "UTF-8", false);
     },
     _showMessageToast: function(){
       MessageToast.show.apply(MessageToast, arguments);

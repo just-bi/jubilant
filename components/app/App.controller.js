@@ -1,3 +1,19 @@
+/**
+*  Copyright 2017 Roland.Bouman@gmail.com; Just-BI.nl
+*
+*  Licensed under the Apache License, Version 2.0 (the "License");
+*  you may not use this file except in compliance with the License.
+*  You may obtain a copy of the License at
+*
+*      http://www.apache.org/licenses/LICENSE-2.0
+*
+*  Unless required by applicable law or agreed to in writing, software
+*  distributed under the License is distributed on an "AS IS" BASIS,
+*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+*  See the License for the specific language governing permissions and
+*  limitations under the License.
+*
+*/
 sap.ui.define([
   "jubilant/components/basecontroller/BaseController",
   "sap/ui/model/odata/v2/ODataModel",
@@ -42,23 +58,36 @@ function(
     _clearNavigationList: function(){
       this._getNavigationList().removeAllItems();
     },
+    _setJubilantMetaModel: function(jubilantMetaModel){
+      this.setModel(jubilantMetaModel.getODataModel(), this._dataModelName);
+      this.setModel(jubilantMetaModel, this._jubilantMetaModelName);
+      this._displayVisualisationButtons();
+      var app = this.byId("app");
+      app.setBusy(false);
+    },
     _handleChangeServiceUri: function(serviceObject, errorHandler){
       var app = this.byId("app");
       app.setBusy(true);
-      var serviceUri = serviceObject.SERVICE_URI;
-      var modelOptions = serviceObject["sap.ui.model.odata.v2.ODataModel.options"];
-      var jubilantMetaModel = new JubilantMetaModel(serviceUri, {
-        success: function(){
-          this.setModel(jubilantMetaModel.getODataModel(), this._dataModelName);
-          this._displayVisualisationButtons();
-          app.setBusy(false);
-        }.bind(this),
-        error: function(){
-          app.setBusy(false);
-          MessageToast.show(this.getTextFromI18n("metadataFailed.message"));
-        }.bind(this)
-      }, modelOptions);
-      this.setModel(jubilantMetaModel, this._jubilantMetaModelName);
+      var jubilantMetaModel;
+      if (serviceObject.jubilantMetaModel) {
+        jubilantMetaModel = serviceObject.jubilantMetaModel;
+        this._setJubilantMetaModel(jubilantMetaModel);
+      }
+      else {
+        var serviceUri = serviceObject.SERVICE_URI;
+        var modelOptions = serviceObject["sap.ui.model.odata.v2.ODataModel.options"];
+        jubilantMetaModel = new JubilantMetaModel(serviceUri, {
+          success: function(){
+            this._setJubilantMetaModel(jubilantMetaModel);
+            serviceObject.jubilantMetaModel = jubilantMetaModel;
+            serviceObject.oDataModel = jubilantMetaModel.getODataModel();
+          }.bind(this),
+          error: function(){
+            app.setBusy(false);
+            MessageToast.show(this.getTextFromI18n("metadataFailed.message"));
+          }.bind(this)
+        }, modelOptions, serviceObject);
+      }
     },
     onLoadODataUriPressed: function(event){
       var input = this.byId("url");

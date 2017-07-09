@@ -1,3 +1,19 @@
+/**
+*  Copyright 2017 Roland.Bouman@gmail.com; Just-BI.nl
+*
+*  Licensed under the Apache License, Version 2.0 (the "License");
+*  you may not use this file except in compliance with the License.
+*  You may obtain a copy of the License at
+*
+*      http://www.apache.org/licenses/LICENSE-2.0
+*
+*  Unless required by applicable law or agreed to in writing, software
+*  distributed under the License is distributed on an "AS IS" BASIS,
+*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+*  See the License for the specific language governing permissions and
+*  limitations under the License.
+*
+*/
 sap.ui.define([
   "sap/ui/model/json/JSONModel",
   "sap/ui/model/odata/v2/ODataModel",
@@ -15,9 +31,19 @@ function(
    OperationMode
 ){
   var JulbilantMetaModel = JSONModel.extend("jubilant.components.jubilantmetamodel.JubilantMetaModel", {
-    constructor: function(oDataModel, callbacks, modelOptions){
+    constructor: function(oDataModel, callbacks, modelOptions, serviceData){
       JSONModel.call(this, {});
       this.setODataModel(oDataModel, callbacks, modelOptions);
+      this.setProperty("/" + this._serviceDataPath, {
+        SERVICE_URI: serviceData.SERVICE_URI,
+        LABEL: serviceData.LABEL,
+        "sap.ui.model.odata.v2.ODataModel.options": serviceData["sap.ui.model.odata.v2.ODataModel.options"]
+      });
+    },
+    _serviceDataPath: "serviceData",
+    getServiceData: function(){
+      var serviceData = this.getProperty("/" + this._serviceDataPath);
+      return serviceData;
     },
     //see: https://sapui5.hana.ondemand.com/#docs/api/symbols/sap.ui.model.odata.v2.ODataModel.html#constructor
     _defaultODataModelOptions: {
