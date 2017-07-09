@@ -31,11 +31,6 @@
         <m:Label text="{i18n>axesLabel.text}:"/>
       </m:contentLeft>
       <m:contentRight>
-        <m:Button
-          icon="sap-icon://settings"
-          tooltip="{i18n>axesArea.settingsButton.tooltip}"
-          press="onVisualisationEditorComponentSettingsPressed"
-        />
       </m:contentRight>
     </m:Bar>
     <m:VBox
