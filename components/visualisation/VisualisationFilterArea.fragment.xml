@@ -42,7 +42,7 @@
     <m:Toolbar>
       <m:Button 
         tooltip="{i18n>clearFilterButton.tooltip}"
-        icon="sap-icon://decline"
+        icon="sap-icon://clear-filter"
         press="onClearFilterButtonPressed"
       />
       <m:Label text="{i18n>filterLabel.text}:"/>

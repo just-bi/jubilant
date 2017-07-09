@@ -26,8 +26,18 @@
   tooltip="{i18n>axesLabel.text}"
 >
   <m:items>
-  
-    <m:Label text="{i18n>axesLabel.text}:"/>
+    <m:Bar>
+      <m:contentLeft>
+        <m:Label text="{i18n>axesLabel.text}:"/>
+      </m:contentLeft>
+      <m:contentRight>
+        <m:Button
+          icon="sap-icon://settings"
+          tooltip="{i18n>axesArea.settingsButton.tooltip}"
+          press="onVisualisationEditorComponentSettingsPressed"
+        />
+      </m:contentRight>
+    </m:Bar>
     <m:VBox
       id="axes"
       items="{
@@ -44,14 +54,14 @@
             <m:Button
               app:buttonId="addAll"
               enabled="true"
-              icon="sap-icon://add"
+              icon="sap-icon://multiselect-all"
               tooltip="{i18n>btnAddAllToAxis.tooltip}"
               press="onAddAllToAxisPressed"
             />
             <m:Button
               app:buttonId="clearAxis"
               enabled="false"
-              icon="sap-icon://decline"
+              icon="sap-icon://multiselect-none"
               tooltip="{i18n>btnRemoveAllFromAxis.tooltip}"
               press="onRemoveAllFromAxisPressed"
             />
