@@ -66,6 +66,7 @@ function(
       app.setBusy(false);
     },
     _handleChangeServiceUri: function(serviceObject, errorHandler){
+      this._setSelectedEntitySetName(null);
       var app = this.byId("app");
       app.setBusy(true);
       var jubilantMetaModel;
