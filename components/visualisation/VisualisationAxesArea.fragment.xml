@@ -14,10 +14,12 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-<m:VBox
+<core:FragmentDefinition
 	xmlns:m="sap.m"
 	xmlns:core="sap.ui.core"
 	xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+>
+<m:VBox
 	width="100%"
   id="axesArea"
   app:visualisationEditorComponentDefaultVisible="true"
@@ -72,7 +74,7 @@
             placeholder="{i18n>axisComboBox.placeholder}"
             selectionFinish="onAxisChanged"
             items="{
-              path: 'entitySetDescriptorModel>/type/properties',
+              path: 'entitySetDescriptorModel>/queryProperties',
               templateShareable: false
             }"
           >
@@ -89,3 +91,4 @@
     </m:VBox>
   </m:items>
 </m:VBox>
+</core:FragmentDefinition>

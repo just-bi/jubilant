@@ -70,7 +70,7 @@ function(
       });      
       return column;
     },
-    _createColumns: function(dataModelName){
+    _createColumns: function(fieldUsageRegistry, dataModelName){
       if (!dataModelName) {
         dataModelName = this._getDataModelName();
       }
@@ -82,16 +82,17 @@ function(
 
       var select = [];
       var visualisationAxesAreaManager = this._getVisualisationEditorComponentManager("VisualisationAxesAreaManager");
-      var selectedItems = visualisationAxesAreaManager.getSelectedAxisItems(this._columnAxisId);
+      var selectedItems = visualisationAxesAreaManager.getSelectedAxisItems(this._columnAxisId);     
       selectedItems.forEach(function(selectedItem){
         var key = selectedItem.getKey();
+        this.registerFieldUsage(fieldUsageRegistry, key, visualisationAxesAreaManager);
         if (columnMap[key]) {
           delete columnMap[key];
         }
         else {
           visualisation.addColumn(this._createColumn(key, dataModelName));
         }
-        select.push(key)
+        select.push(key);
       }.bind(this));
 
       for (var column in columnMap){
@@ -100,33 +101,46 @@ function(
       }
       return select;
     },
+    _getFilter: function(fieldUsageRegistry){
+      var visualisationFilterAreaManager = this._getVisualisationEditorComponentManager("VisualisationFilterAreaManager");
+      var filter = visualisationFilterAreaManager.getFilter(fieldUsageRegistry);
+      return filter;
+    },
+    _getSorters: function(fieldUsageRegistry){
+      var visualisationSortAreaManager = this._getVisualisationEditorComponentManager("VisualisationSortAreaManager");
+      var sorters = visualisationSortAreaManager.getSorters(fieldUsageRegistry);
+      return sorters;
+    },
     _executeQuery: function(callback){
       var visualisation = this._getVisualisation();
       
-      var select = this._createColumns();
+      var fieldUsageRegistry = {};
+      
+      var select = this._createColumns(fieldUsageRegistry);
       var path;
       path = this._getEntitySetPath();
       path = this._dataModelName + ">" + path;
       
-      var filters;
-      var visualisationFilterAreaManager = this._getVisualisationEditorComponentManager("VisualisationFilterAreaManager");
-      var filter = visualisationFilterAreaManager.getFilter();
-      if (filter){
-        filters = [filter];
+      var filters = this._getFilter(fieldUsageRegistry);
+      if (filters) {
+        filters = [filters];
       }
-
-      var sorters;
-      var visualisationSortAreaManager = this._getVisualisationEditorComponentManager("VisualisationSortAreaManager");
-      sorters = visualisationSortAreaManager.getSorters();
+      var sorters = this._getSorters(fieldUsageRegistry);
+      
+      var expandList = this._getExpandList(fieldUsageRegistry);
+      var parameters = {
+        select: select.join(","),
+        countMode: CountMode.Request          
+      };
+      if (expandList.length) {
+        parameters.expand = expandList.join(","); 
+      };
       
       visualisation.bindRows({
         path: path,
         filters: filters,
         sorter: sorters,
-        parameters: {
-          select: select.join(","),
-          countMode: CountMode.Request
-        }
+        parameters: parameters
       });
       
       var binding = visualisation.getBinding("rows");

@@ -15,9 +15,7 @@
 *
 */
 sap.ui.define([
-  "jubilant/components/visualisation/BaseVisualisationEditorComponentManager",
-  "sap/ui/model/Filter",
-  "sap/ui/model/FilterOperator"
+  "jubilant/components/visualisation/BaseVisualisationEditorComponentManager"
 ], 
 function(
    BaseVisualisationEditorComponentManager,
@@ -38,23 +36,51 @@ function(
         relationalOperator: "equals"
       }]);
     },
-    _getHierarchyCondition: function(){
+    _getHierarchyConditions: function(){
       var visualisationStateModel = this._getVisualisationStateModel();
       var path = this._getVisualisationStateModelPath();
-      var hierarchyCondition = visualisationStateModel.getProperty(path + "/" + this._nodesPath + "/0");
-      return hierarchyCondition;
+      var hierarchyConditions = visualisationStateModel.getProperty(path + "/" + this._nodesPath);
+      return hierarchyConditions;
     },
-    _getHierarchyConditionFilter: function(parentKeyValue){
-      var hierarchyCondition = this._getHierarchyCondition();
-      if (!hierarchyCondition.parentKeyField || !hierarchyCondition.keyField) {
-        return null;
+    _getRowForEvent: function(event){
+      var button = event.getSource();
+      var row = button.getParent().getParent();
+      return row;
+    },
+    _getRowContextForEvent: function(event){
+      var row = this._getRowForEvent(event);
+      var bindingContext = row.getBindingContext("visualisationState");
+      return bindingContext;
+    },
+    _getRowIndexForEvent: function(event){
+      var context = this._getRowContextForEvent(event);
+      var path = context.getPath();
+      var pathParts = path.split("/");
+      var index = pathParts.pop();
+      return parseInt(index, 10);
+    },
+    onRemoveHierarchyConditionPressed: function(event){
+      var visualisationStateModel = this._getVisualisationStateModel();
+      var path = this._getVisualisationStateModelPath() + "/" + this._nodesPath;
+      var hierarchyConditions = this._getHierarchyConditions();
+      if (hierarchyConditions.length === 1) {
+        return;
       }
-      var hierarchyConditionFilter = new Filter({
-        path: hierarchyCondition.parentKeyField,
-        operator: FilterOperator.EQ,
-        value1: parentKeyValue
+      var index = this._getRowIndexForEvent(event);
+      hierarchyConditions.splice(index, 1);
+      visualisationStateModel.setProperty(path, hierarchyConditions);
+    },
+    onAddHierarchyConditionPressed: function(event){
+      var visualisationStateModel = this._getVisualisationStateModel();
+      var path = this._getVisualisationStateModelPath() + "/" + this._nodesPath;
+      var index = this._getRowIndexForEvent(event);
+      var hierarchyConditions = this._getHierarchyConditions();
+      hierarchyConditions.splice(index, 0, {
+        keyField: null,
+        relationalOperator: "equals",
+        parentKeyField: null
       });
-      return hierarchyConditionFilter ;
+      visualisationStateModel.setProperty(path, hierarchyConditions);
     }
   });
   return VisualisationHierarchyConditionAreaManager;

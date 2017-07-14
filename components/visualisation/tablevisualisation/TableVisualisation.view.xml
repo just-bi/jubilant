@@ -15,7 +15,6 @@
    limitations under the License.
 -->
 <mvc:View
-    xmlns="sap.m"
     xmlns:m="sap.m"
     xmlns:core="sap.ui.core"
     xmlns:mvc="sap.ui.core.mvc"
@@ -24,17 +23,16 @@
     height="100%"
     controllerName="jubilant.components.visualisation.tablevisualisation.TableVisualisation"
 >
-    <m:VBox>
-        <core:Fragment fragmentName="jubilant.components.visualisation.VisualisationToolbar" type="XML" />
-        <core:Fragment fragmentName="jubilant.components.visualisation.VisualisationAxesArea" type="XML" />
-        <core:Fragment fragmentName="jubilant.components.visualisation.VisualisationFilterArea" type="XML" />
-        <core:Fragment fragmentName="jubilant.components.visualisation.VisualisationSortArea" type="XML" />
-        <t:Table 
-            id="visualisation"
-            selectionMode="None"
-            busy="{visualisationState>/busy}"
-            visibleRowCountMode="Interactive"
-            minAutoRowCount="10"
-        ></t:Table>
-    </m:VBox>
+  <m:VBox>
+    <core:Fragment fragmentName="jubilant.components.visualisation.VisualisationToolbar" type="XML" />
+    <core:Fragment fragmentName="jubilant.components.visualisation.VisualisationAxesArea" type="XML" />
+    <core:Fragment fragmentName="jubilant.components.visualisation.VisualisationFilterArea" type="XML" />
+    <core:Fragment fragmentName="jubilant.components.visualisation.VisualisationSortArea" type="XML" />
+    <t:Table 
+      id="visualisation"
+      selectionMode="None"
+      busy="{visualisationState>/busy}"
+      visibleRowCountMode="Interactive"
+    ></t:Table>
+  </m:VBox>
 </mvc:View>

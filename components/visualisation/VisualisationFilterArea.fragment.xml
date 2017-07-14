@@ -14,13 +14,14 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-<t:TreeTable
+<core:FragmentDefinition
   xmlns:m="sap.m"
   xmlns:core="sap.ui.core"
   xmlns:t="sap.ui.table"
   xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+>
+<t:TreeTable
   width="100%"
-  visibleRowCount="5"
   selectionMode="None"
   columnHeaderVisible="false"
   columnHeaderHeight="0"
@@ -37,6 +38,9 @@
   app:visualisationEditorComponent="jubilant.components.visualisation.VisualisationFilterAreaManager"
   app:visualisationEditorComponentIcon="sap-icon://filter"
   tooltip="{i18n>filterLabel.text}"
+  visibleRowCountMode="Interactive"
+  visibleRowCount="2"
+  minAutoRowCount="2"
 >
   <t:toolbar>
     <m:Toolbar>
@@ -73,7 +77,7 @@
             width="100%"
             visible="{= ${visualisationState>relationalOperator} ? true : false}"
             items="{
-              path: 'entitySetDescriptorModel>/type/properties',
+              path: 'entitySetDescriptorModel>/queryProperties',
               filters: [{
                 path: '',
                 test: '._isPropertyFilterable'
@@ -297,3 +301,4 @@
     </t:Column>
   </t:columns>
 </t:TreeTable>
+</core:FragmentDefinition>

@@ -142,17 +142,25 @@ function(
       var row = this._getSortModelRowForEvent(event);
       this._handleRemoveSortColumnButtonPressed(row);
     },
-    getSorters: function(){
-      var sorters = [];
+    getSorters: function(fieldUsageRegistry){
       var sortColumns = this._getSortColumns();
-      if (sortColumns && sortColumns.length) {
-        sortColumns.forEach(function(sortColumn){
-          var sortClause;
-          if (!sortColumn.field) {
-            return;
-          }
-          sorters.push(new Sorter(sortColumn.field, sortColumn.descending));
-        }.bind(this));
+      if (!sortColumns || !sortColumns.length) {
+        return null;
+      }
+      var sorters = [];
+      var controller = this._visualisationController;
+      sortColumns.forEach(function(sortColumn){
+        var field = sortColumn.field; 
+        if (!field) {
+          return;
+        }
+        controller.registerFieldUsage(fieldUsageRegistry, field, this);
+        var sorter = new Sorter(field, sortColumn.descending);
+        sorters.push(sorter);
+      }.bind(this));
+      
+      if (!sorters.length) {
+        sorters = null;
       }
       return sorters;
     },

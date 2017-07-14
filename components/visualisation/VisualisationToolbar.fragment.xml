@@ -95,6 +95,12 @@
 		  press="onClearPressed"
 		  enabled="{= ${visualisationState>/busy} === false }"
 		/>
+    <m:Button
+      icon="sap-icon://settings"
+      tooltip="{i18n>btnSettings.tooltip}"
+      press="onVisualisationSettingsPressed"
+		  enabled="{= ${visualisationState>/busy} === false }"
+    />
   </m:contentLeft>
   <m:contentMiddle>
     <m:Label 
