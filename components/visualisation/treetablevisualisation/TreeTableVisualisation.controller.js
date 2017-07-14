@@ -18,13 +18,17 @@ sap.ui.define([
   "jubilant/components/visualisation/tablevisualisation/TableVisualisation.controller",
   "jubilant/components/visualisation/BaseVisualisationController",
   "sap/ui/model/json/JSONModel",
-  "sap/ui/model/odata/CountMode"
+  "sap/ui/model/odata/CountMode",
+  "sap/ui/model/Filter",
+  "sap/ui/model/FilterOperator"  
 ], 
 function(
   TableVisualisation,
   BaseVisualisationController,
   JSONModel,
-  CountMode
+  CountMode,
+  Filter,
+  FilterOperator
 ){
   "use strict";
   var controller = TableVisualisation.extend("jubilant.components.visualisation.treetablevisualisation.TreeTableVisualisation", {
@@ -55,64 +59,97 @@ function(
       }
       return path;
     },
-    _getFilter: function(parentPath){
+    _getHierarchyFilter: function(fieldUsageRegistry, parentPath){
       var localDataModel = this.getModel(this._localDataModelName);
       var parent = localDataModel.getProperty(parentPath);
-
+      var hierarchyFilter;
       var visualisationHierarchyConditionAreaManager = this._getVisualisationEditorComponentManager("VisualisationHierarchyConditionAreaManager");
-      var hierarchyCondition = visualisationHierarchyConditionAreaManager._getHierarchyCondition();
-
-      var parentKeyValue = parent ? parent[hierarchyCondition.keyField] : null;
-      var hierarchyConditionFilter = visualisationHierarchyConditionAreaManager._getHierarchyConditionFilter(parentKeyValue);
-
+      var hierarchyConditions = visualisationHierarchyConditionAreaManager._getHierarchyConditions();
+      var hierarchyFilters = [];
+      hierarchyConditions.forEach(function(condition){
+        if (!condition.keyField || !condition.parentKeyField) {
+          return;
+        }
+        this.registerFieldUsage(fieldUsageRegistry, condition.keyField, visualisationHierarchyConditionAreaManager);
+        this.registerFieldUsage(fieldUsageRegistry, condition.parentKeyField, visualisationHierarchyConditionAreaManager);
+        var parentValue = parent ? parent[condition.keyField] : null;
+        var hierarchyFilter = new Filter({
+          path: condition.parentKeyField,
+          //TODO: use the operator from the model, lookup the corresponding ui5 filteroperator
+          operator: FilterOperator.EQ,
+          value1: typeof(parentValue) === "undefined" ? null : parentValue
+        });
+        hierarchyFilters.push(hierarchyFilter);
+      }.bind(this));
+      
+      if (hierarchyFilters && hierarchyFilters.length) {
+        if (hierarchyFilters.length === 1) {
+          hierarchyFilter = hierarchyFilters[0];
+        }
+        else {
+          hierarchyFilter = new Filter({
+            filters: hierarchyFilters,
+            and: true
+          });
+        }
+      }
+      return hierarchyFilter;
+    },
+    _getFilter: function(fieldUsageRegistry, parentPath){
       var filters = [];
-      if (hierarchyConditionFilter) {
-        filters.push(hierarchyConditionFilter);
+      var hierarchyFilter = this._getHierarchyFilter(fieldUsageRegistry, parentPath);
+      if (hierarchyFilter) {
+        filters.push(hierarchyFilter);
       }
 
-      var visualisationFilterAreaManager = this._getVisualisationEditorComponentManager("VisualisationFilterAreaManager");
-      var filter = visualisationFilterAreaManager.getFilter();
+      var filter = TableVisualisation.prototype._getFilter.call(this, fieldUsageRegistry);
       if (filter) {
         filters.push(filter);
       }
       return filters;
     },
-    _getSelect: function(){
+    _getSelect: function(fieldUsageRegistry){
       var visualisationAxesAreaManager = this._getVisualisationEditorComponentManager("VisualisationAxesAreaManager");
       var select = visualisationAxesAreaManager.getSelectedAxisItems(this._columnAxisId).map(function(item){
-        return item.getKey();
-      });
+        var key = item.getKey();
+        this.registerFieldUsage(fieldUsageRegistry, key, visualisationAxesAreaManager);
+        return key;
+      }.bind(this));
       
       var visualisationHierarchyConditionAreaManager = this._getVisualisationEditorComponentManager("VisualisationHierarchyConditionAreaManager");
-      var hierarchyCondition = visualisationHierarchyConditionAreaManager._getHierarchyCondition();
-      if (hierarchyCondition) {
-        if (hierarchyCondition.keyField && select.indexOf(hierarchyCondition.keyField) === -1) {
-          select.push(hierarchyCondition.keyField);
-        }
-        if (hierarchyCondition.parentKeyField && select.indexOf(hierarchyCondition.parentKeyField) === -1) {
-          select.push(hierarchyCondition.parentKeyField);
-        }
+      var hierarchyConditions = visualisationHierarchyConditionAreaManager._getHierarchyConditions();
+      if (hierarchyConditions && hierarchyConditions.length) {
+        hierarchyConditions.forEach(function(hierarchyCondition){
+          if (!hierarchyCondition.keyField) {
+            return;
+          }
+          this.registerFieldUsage(fieldUsageRegistry, hierarchyCondition.keyField, visualisationHierarchyConditionAreaManager);
+          if (select.indexOf(hierarchyCondition.keyField) === -1){
+            select.push(hierarchyCondition.keyField)
+          }
+        }.bind(this));
       }
       return select;
     },
-    _getSorters: function(){
-      var sorters;
-      var visualisationSortAreaManager = this._getVisualisationEditorComponentManager("VisualisationSortAreaManager");
-      sorters = visualisationSortAreaManager.getSorters();
-      return sorters;
-    },
     _loadChildNodes: function(callback, parentPath){
-      var filters = this._getFilter(parentPath);
-      var select = this._getSelect();
-      var sorters = this._getSorters();
+      var fieldUsageRegistry = {};
       
+      var filters = this._getFilter(fieldUsageRegistry, parentPath);
+      var select = this._getSelect(fieldUsageRegistry);
+      var sorters = this._getSorters(fieldUsageRegistry);
+      
+      var expandList = this._getExpandList(fieldUsageRegistry);
       var dataModel = this.getModel(BaseVisualisationController.prototype._dataModelName);
+      var urlParameters = {
+        "$select": select.join(", ")
+      };
+      if (expandList.length){
+        urlParameters["$expand"] = expandList.join(",");
+      }
       dataModel.read(this._getEntitySetPath(), {
         filters: filters,
         sorters: sorters,
-        urlParameters: {
-          "$select": select.join(", ")
-        },
+        urlParameters: urlParameters,
         success: function(oData, response){
           oData.results.forEach(function(node){
             node[this._nodesPath] = this._dummy;
@@ -128,7 +165,7 @@ function(
       });
     },
     _executeQuery: function(callback){
-      this._createColumns(this._localDataModelName);
+      this._createColumns(null, this._localDataModelName);
       var visualisation = this._getVisualisation();
       visualisation.unbindRows();
       visualisation.bindRows({
@@ -153,6 +190,14 @@ function(
         return;
       }
       this._loadChildNodes(this._queryExecuted.bind(this), path);
+    },
+    onRemoveHierarchyConditionPressed: function(event){
+      var visualisationHierarchyConditionAreaManager = this._getVisualisationEditorComponentManager("VisualisationHierarchyConditionAreaManager");
+      visualisationHierarchyConditionAreaManager.onRemoveHierarchyConditionPressed(event);
+    },
+    onAddHierarchyConditionPressed: function(event){
+      var visualisationHierarchyConditionAreaManager = this._getVisualisationEditorComponentManager("VisualisationHierarchyConditionAreaManager");
+      visualisationHierarchyConditionAreaManager.onAddHierarchyConditionPressed(event);
     }
   });
   return controller;

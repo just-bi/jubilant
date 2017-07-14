@@ -162,14 +162,17 @@ function(
       var filter = this._combineFilters(filters, logicalOperatorDescriptor["sap.ui.model.Filter.andFlag"]);
       return filter;
     },
-    _getFilterForRelationalOperatorNode: function(node){
+    _getFilterForRelationalOperatorNode: function(node, fieldUsageRegistry){
       var filter;
       var field = node.field;
       if (!field) {
         filter = null;
         return filter;
       }
+            
       var controller = this._visualisationController;
+      controller.registerFieldUsage(fieldUsageRegistry, field, this);
+      
       var propertyDescriptor = controller._getPropertyDescriptor(field);
       var type = propertyDescriptor.oDataProperty.type;
 
@@ -205,14 +208,14 @@ function(
       }
       return filter;
     },
-    _getFilterForNode: function(node){
+    _getFilterForNode: function(node, properties){
       var filter = null;
       if (node.logicalOperator) {
         filter = this._getFilterForLogicalOperatorNode(node);
       }
       else 
       if (node.relationalOperator) {
-        filter = this._getFilterForRelationalOperatorNode(node);
+        filter = this._getFilterForRelationalOperatorNode(node, properties);
       }
       return filter;
     },

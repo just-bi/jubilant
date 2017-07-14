@@ -281,7 +281,7 @@ function(
       this.setProperty("/entitySets", entitySetDescriptors);
       this.setProperty("/entityTypes", entityTypeDescriptors);
     },
-    _getEntitySetDescriptor: function(entitySetName){
+    getEntitySetDescriptor: function(entitySetName){
       var entitySetDescriptors = this.getProperty("/entitySets");
       entitySetDescriptors = entitySetDescriptors.filter(function(entitySetDescriptor){
         return entitySetDescriptor.oDataEntitySet.name === entitySetName;
@@ -291,6 +291,11 @@ function(
       }
       return entitySetDescriptors[0];
     },
+    getEntityTypeDescriptor: function(entityTypeName){
+      var path = "/entityTypes/" + entityTypeName;
+      var entityTypeDescriptor = this.getProperty(path);
+      return entityTypeDescriptor;
+    }
   });
   return JulbilantMetaModel;
 });

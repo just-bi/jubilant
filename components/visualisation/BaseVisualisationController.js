@@ -24,7 +24,8 @@ sap.ui.define([
   "sap/ui/core/Element",
   "sap/m/MessageToast",
   "sap/ui/core/util/File",
-  "jubilant/components/jubilantmetamodel/JubilantMetaModel"
+  "jubilant/components/jubilantmetamodel/JubilantMetaModel",
+  "jubilant/components/visualisation/VisualisationSettingsDialogManager"
 ], 
 function(
   BaseController,
@@ -36,7 +37,8 @@ function(
   Element,
   MessageToast,
   File,
-  JubilantMetaModel
+  JubilantMetaModel,
+  VisualisationSettingsDialogManager
 ){
   "use strict";
   var controller = BaseController.extend("jubilant.components.visualisation.BaseVisualisationController", {
@@ -280,6 +282,9 @@ function(
     _getVisualisationStateModel: function(){
       return this.getModel(this._getVisualisationStateModelName());
     },
+    onSortFieldChanged: function(){
+      this._setSortingChanged(true);
+    },
     onClearFilterButtonPressed: function(event){
       var visualisationFilterAreaManager = this._getVisualisationEditorComponentManager(event);
       if (visualisationFilterAreaManager) {
@@ -423,8 +428,9 @@ function(
       return entityDescriptorModel.getProperty("/type");
     },
     _getPropertyDescriptors: function(){
-      var type = this._getEntityTypeDescriptor();
-      return type.properties;
+      var entityDescriptorModel = this._getEntitySetDescriptorModel(); 
+      var queryProperties = entityDescriptorModel.getProperty("/queryProperties");
+      return queryProperties;
     },
     _getPropertyDescriptor: function(name){
       var properties = this._getPropertyDescriptors().filter(function(propertyDescriptor){
@@ -562,9 +568,22 @@ function(
       this._setAxesChanged(false);
       this._setFilterChanged(false);
     },
+    getJubilantMetaModel: function(){
+      var dataFoundation = this._dataFoundation;
+      var jubilantMetaModel = dataFoundation.jubilantMetaModel;
+      return jubilantMetaModel;
+    },
     setDataFoundation: function(dataFoundation){
       this._dataFoundation = dataFoundation;
-      this._getEntitySetDescriptorModel().setData(dataFoundation.entitySetDescriptor);
+      var entitySetDescriptor = dataFoundation.entitySetDescriptor;
+      if (entitySetDescriptor) {
+        var json = JSON.stringify(entitySetDescriptor);
+        var entitySetDescriptorClone = JSON.parse(json);
+        var entityDescriptorModel = this._getEntitySetDescriptorModel(); 
+        entityDescriptorModel.setData(entitySetDescriptorClone);
+        var queryProperties = [].concat(entitySetDescriptorClone.type.properties);
+        entityDescriptorModel.setProperty("/queryProperties", queryProperties);
+      }
       this.setModel(dataFoundation.model, this._dataModelName);
       this._dataFoundationSet(dataFoundation);
     },
@@ -750,7 +769,7 @@ function(
     _doLoad: function(data, jubilantMetaModel){
       var loadedDataFoundation = data.dataFoundation;
       var entitySetName = loadedDataFoundation.entitySetName;
-      var entitySetDescriptor = jubilantMetaModel._getEntitySetDescriptor(entitySetName);
+      var entitySetDescriptor = jubilantMetaModel.getEntitySetDescriptor(entitySetName);
 
       this.setDataFoundation({
         model: jubilantMetaModel.getODataModel(), 
@@ -790,23 +809,41 @@ function(
       var loadedDataFoundation = data.dataFoundation;
       var serviceUri = loadedDataFoundation.service.SERVICE_URI;
       var service, servicesModel = this.getModel("oDataServices");
-      var services = servicesModel.getProperty("/oDataServices");
       var jubilantMetaModel;
-      services.some(function(dataService){
-        if (dataService.SERVICE_URI === serviceUri) {
-          service = dataService;
-          if (dataService.jubilantMetaModel) {
-            jubilantMetaModel = dataService.jubilantMetaModel;
-            return true;
+
+      //next will only work for a JSON Model
+      var services = servicesModel.getProperty("/oDataServices");
+      if (services) {
+        services.some(function(dataService){
+          if (dataService.SERVICE_URI === serviceUri) {
+            service = dataService;
+            if (dataService.jubilantMetaModel) {
+              jubilantMetaModel = dataService.jubilantMetaModel;
+              return true;
+            }
           }
-        }
-      });
+        });
+      }
+      else {
+        //TODO
+        //most likely the services comes from an Odata model
+        //we currently don't have the stuff in place to look for the jubilant model in there
+      }
       
       if (jubilantMetaModel) {
         this._doLoad(data, jubilantMetaModel);
       }
       else {
-        var modelOptions = service["sap.ui.model.odata.v2.ODataModel.options"];
+        var modelOptions;
+        if (service){
+          modelOptions = service["sap.ui.model.odata.v2.ODataModel.options"];
+        }
+        else {
+          service = {
+            SERVICE_URI: serviceUri,
+            LABEL: serviceUri
+          };
+        }
         jubilantMetaModel = new JubilantMetaModel(serviceUri, {
           success: function(){
             if (service) {
@@ -857,6 +894,42 @@ function(
       var visualisationPluginDescriptor = this.getVisualisationPluginDescriptor();      
       var extension = this.getFileExtension();
       File.save(json, fileName, extension, "application/json", "UTF-8", false);
+    },
+    onVisualisationSettingsPressed: function(event){
+      var visualisationSettingsDialogManager = this._visualisationSettingsDialogManager;
+      if (!visualisationSettingsDialogManager){
+        visualisationSettingsDialogManager = this._visualisationSettingsDialogManager = new VisualisationSettingsDialogManager(this);
+      }
+      visualisationSettingsDialogManager.showDialog(true);
+    },
+    registerFieldUsage: function(registry, field, fieldUser){
+      if (!registry) {
+        return;
+      }
+      if (!registry[field]) {
+        registry[field] = {};
+      }
+      var fieldUserName = fieldUser.getMetadata().getName();
+      if (!registry[field][fieldUserName]) {
+        registry[field][fieldUserName] = 0;
+      }
+      registry[field][fieldUserName] += 1;
+    },
+    _getExpandList: function(fieldUsageRegistry){
+      var field, expand = {};
+      for (field in fieldUsageRegistry) {
+        field = field.split("/");
+        if (field.length === 1) {
+          continue;
+        }
+        field.pop();
+        expand[field.join("/")] = true;
+      }
+      var list = [];
+      for (field in expand) {
+        list.push(field);
+      }
+      return list;
     },
     _showMessageToast: function(){
       MessageToast.show.apply(MessageToast, arguments);

@@ -182,7 +182,7 @@ function(
               enabled = Boolean(entitySetDescriptor) && factory.canVisualiseEntitySet(entitySetDescriptor, model);
               break;
             default:
-              enabled = false;          
+              enabled = false;
           }
         }
         catch (e) {
@@ -200,7 +200,7 @@ function(
       var entitySetName = item.getKey();
       this._setSelectedEntitySetName(entitySetName);
       var jubilantMetaModel = this._getJubilantMetaModel();
-      var entitySetDescriptor = jubilantMetaModel._getEntitySetDescriptor(entitySetName);
+      var entitySetDescriptor = jubilantMetaModel.getEntitySetDescriptor(entitySetName);
       this._displayVisualisationButtons(entitySetDescriptor);
     },
     _createVisualisation: function(visualisationName){
@@ -210,7 +210,7 @@ function(
         var entitySetDescriptor;
         if (entitySetName) {
           var jubilantMetaModel = this._getJubilantMetaModel();
-          entitySetDescriptor = jubilantMetaModel._getEntitySetDescriptor(entitySetName);
+          entitySetDescriptor = jubilantMetaModel.getEntitySetDescriptor(entitySetName);
         }
 
         switch (visualisationPluginDescriptor.factoryObject.getScope()){

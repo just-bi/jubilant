@@ -37,7 +37,6 @@
       toggleOpenState="onToggleOpenState"
       busy="{visualisationState>/busy}"
       visibleRowCountMode="Interactive"
-      minAutoRowCount="10"
     />
   </m:VBox>
 </mvc:View>
