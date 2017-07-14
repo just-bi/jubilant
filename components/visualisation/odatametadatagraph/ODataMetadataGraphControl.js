@@ -160,10 +160,6 @@ sap.ui.define([
         edges: {
           smooth: false
         },
-        physics:{
-          barnesHut:{gravitationalConstant:-30000},
-          stabilization: {iterations:2500}
-        },
         layout: {/*
           hierarchical: {
             direction: "UD" ,
@@ -171,13 +167,24 @@ sap.ui.define([
           }*/
         },
         physics: {
-          enabled: false /*,
-          hierarchicalRepulsion: {
-            nodeDistance: 300
-          }*/
+          enabled: true ,
+          solver: "forceAtlas2Based",
+          forceAtlas2Based: {
+            gravitationalConstant: -2000
+          }
         }
       };
       var visNetwork = new vis.Network(container, networkData, networkOptions);
+
+      setTimeout(function(){
+        visNetwork.stopSimulation();
+        visNetwork.setOptions({
+          physics: {
+            enabled: false
+          }
+        })
+      }, 100);
+      
       return visNetwork;
     },
     _getTypeId: function(oDataEntityType, type){
