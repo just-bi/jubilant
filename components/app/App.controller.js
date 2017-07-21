@@ -175,7 +175,7 @@ function(
           button = this._getButtonForVisualisation(visualisationPluginDescriptor);
           var factory = this._getVisualisationFactory(visualisationPluginDescriptor);
           switch (factory.getScope()) {
-            case "model":
+            case "service":
               enabled = factory.canVisualiseModel(model);
               break;
             case "entityset":
@@ -211,14 +211,7 @@ function(
         if (entitySetName) {
           var jubilantMetaModel = this._getJubilantMetaModel();
           entitySetDescriptor = jubilantMetaModel.getEntitySetDescriptor(entitySetName);
-        }
-
-        switch (visualisationPluginDescriptor.factoryObject.getScope()){
-          case "entityset":
-            break;
-          case "model":
-            break;
-        }
+        }        
         
         var tabContainerItem = this._createTabContainerItem(visualisationPluginDescriptor, entitySetDescriptor);
         tabContainerItem.addContent(view);
