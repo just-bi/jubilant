@@ -1,5 +1,20 @@
 {"plugins": [
   {
+    "name": "startervisualisation",
+    "tooltip": "Starter Visualisation",
+    "description": "A starting point for developers that want to create their own visualisation plugins.",
+    "icon": "sap-icon://example",
+    "factory": "jubilant.components.visualisation.startervisualisation.StarterVisualisationFactory",
+    "version": "1.0",
+    "axes":[
+      {
+        "id": "items", 
+        "label": "Items",
+        "icon": "sap-icon://multi-select"
+      }
+    ]
+  },
+  {
     "name": "metadatagraph",
     "scope": "service",
     "tooltip": "OData Metadata Graph",
