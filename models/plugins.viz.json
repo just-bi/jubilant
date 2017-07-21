@@ -1,7 +1,7 @@
 {"plugins": [
   {
     "name": "metadatagraph",
-    "scope": "model",
+    "scope": "service",
     "tooltip": "OData Metadata Graph",
     "description": "Graph of all OData entities and their relationships",
     "icon": "sap-icon://org-chart",

@@ -52,7 +52,18 @@ function(
     },
     getScope: function(){
       var visualisationPluginDescriptor = this._visualisationPluginDescriptor;
-      return visualisationPluginDescriptor.scope || "entityset";
+      var scope = visualisationPluginDescriptor.scope;
+      switch (scope) {
+        case undefined:
+          scope = "entityset";
+          break;
+        case "model":
+          scope = "service";
+          break;
+        default:
+          break;
+      }
+      return scope;
     },
     _createNewView: function(controller){
       var viewName = this._getViewName();
