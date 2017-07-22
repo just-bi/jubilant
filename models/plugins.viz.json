@@ -79,5 +79,13 @@
         "stylesheets": ["vis.min.css"]
       }
     }
-  }
+  },
+  {
+    "name": "objecthierarchytree",
+    "tooltip": "Object Hierarchy Tree",
+    "description": "A treeview that lets you navigate all navigation properties.",
+    "icon": "sap-icon://tree",
+    "factory": "jubilant.components.visualisation.objecthierarchyvisualisation.ObjectHierarchyVisualisationFactory",
+    "version": "1.0"
+  }  
 ]}
