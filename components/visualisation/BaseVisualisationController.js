@@ -531,7 +531,15 @@ function(
       return visualisation;
     },
     onCancelPressed: function(){
-      this._currentReadRequest.abort();
+      //subclasses that use model.read to fetch data 
+      //should assign the return value to this._currentReadRequest.
+      var currentReadRequest = this._currentReadRequest;
+      if (currentReadRequest) {
+        currentReadRequest.abort();
+        if (currentReadRequest.callback) {
+          currentReadRequest.callback();
+        }
+      }
       this._currentReadRequest = null;
       this._setBusy(false);
     },
