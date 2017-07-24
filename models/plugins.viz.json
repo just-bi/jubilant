@@ -33,8 +33,6 @@
             "icon": "sap-icon://org-chart",
             "factory": "jubilant.components.visualisation.odatametadatagraph.ODataMetadataGraphFactory",
             "version": "1.0",
-            "hasAxes": false,
-            "hasFilter": false,
             "libraries": {
                 "vis": {
                     "path": "https://cdnjs.cloudflare.com/ajax/libs/vis/4.20.0/",
