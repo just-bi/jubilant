@@ -237,6 +237,8 @@
               formatter: '._filterValueDateRangeSelectionVisible'
             }"
             change="onFilterValueChanged"
+            dateValue="{visualisationState>value1}"
+            secondDateValue="{visualisationState>value2}"
           />
           <m:RangeSlider
             width="100%"
