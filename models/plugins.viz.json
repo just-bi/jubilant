@@ -1,91 +1,99 @@
-{"plugins": [
-  {
-    "name": "startervisualisation",
-    "tooltip": "Starter Visualisation",
-    "description": "A starting point for developers that want to create their own visualisation plugins.",
-    "icon": "sap-icon://example",
-    "factory": "jubilant.components.visualisation.startervisualisation.StarterVisualisationFactory",
-    "version": "1.0",
-    "axes":[
-      {
-        "id": "items", 
-        "label": "Items",
-        "icon": "sap-icon://multi-select"
-      }
+{
+    "plugins": [{
+            "name": "startervisualisation",
+            "tooltip": "Starter Visualisation",
+            "description": "A starting point for developers that want to create their own visualisation plugins.",
+            "icon": "sap-icon://example",
+            "factory": "jubilant.components.visualisation.startervisualisation.StarterVisualisationFactory",
+            "version": "1.0",
+            "axes": [{
+                "id": "items",
+                "label": "Items",
+                "icon": "sap-icon://multi-select"
+            }]
+        },
+        {
+            "name": "examplevisualisation",
+            "tooltip": "Example Plugin Visualisation",
+            "description": "A example visualisation plugin.",
+            "icon": "sap-icon://puzzle",
+            "factory": "jubilant.components.visualisation.examplevisualisation.ExampleVisualisationFactory",
+            "version": "1.0",
+            "axes": [{
+                "id": "examplesItems",
+                "label": "Items",
+                "icon": "sap-icon://puzzle"
+            }]
+        },
+        {
+            "name": "metadatagraph",
+            "scope": "service",
+            "tooltip": "OData Metadata Graph",
+            "description": "Graph of all OData entities and their relationships",
+            "icon": "sap-icon://org-chart",
+            "factory": "jubilant.components.visualisation.odatametadatagraph.ODataMetadataGraphFactory",
+            "version": "1.0",
+            "hasAxes": false,
+            "hasFilter": false,
+            "libraries": {
+                "vis": {
+                    "path": "https://cdnjs.cloudflare.com/ajax/libs/vis/4.20.0/",
+                    "scripts": ["vis.min.js"],
+                    "stylesheets": ["vis.min.css"]
+                }
+            }
+        },
+        {
+            "name": "table",
+            "scope": "entityset",
+            "tooltip": "Table visualization",
+            "description": "A table visualizes data as a variable number of rows, showing values along a fixed set of columns.",
+            "icon": "sap-icon://table-view",
+            "factory": "jubilant.components.visualisation.tablevisualisation.TableVisualisationFactory",
+            "version": "1.0",
+            "axes": [{
+                "id": "columns",
+                "label": "Columns",
+                "icon": "sap-icon://chart-axis"
+            }]
+        },
+        {
+            "name": "treetable",
+            "scope": "entityset",
+            "tooltip": "Tree Table visualization",
+            "description": "A tree table visualizes data as a variable number of nested rows, showing values along a fixed set of columns.",
+            "icon": "sap-icon://tree",
+            "factory": "jubilant.components.visualisation.treetablevisualisation.TreeTableVisualisationFactory",
+            "version": "1.0",
+            "axes": [{
+                "id": "columns",
+                "label": "Columns",
+                "icon": "sap-icon://chart-axis"
+            }]
+        },
+        {
+            "name": "datagraph",
+            "scope": "entityset",
+            "tooltip": "OData Graph visualization",
+            "description": "The graph visualisation uses navigation properties to draw a graph of related data.",
+            "icon": "sap-icon://share-2",
+            "factory": "jubilant.components.visualisation.odatagraphvisualisation.ODataGraphVisualisationFactory",
+            "version": "0.1",
+            "libraries": {
+                "vis": {
+                    "path": "https://cdnjs.cloudflare.com/ajax/libs/vis/4.20.0/",
+                    "scripts": ["vis.min.js"],
+                    "stylesheets": ["vis.min.css"]
+                }
+            }
+        },
+        {
+            "name": "objecthierarchytree",
+            "tooltip": "Object Hierarchy Tree",
+            "description": "A treeview that lets you navigate all navigation properties.",
+            "icon": "sap-icon://tree",
+            "factory": "jubilant.components.visualisation.objecthierarchyvisualisation.ObjectHierarchyVisualisationFactory",
+            "version": "1.0"
+        }                
     ]
-  },
-  {
-    "name": "metadatagraph",
-    "scope": "service",
-    "tooltip": "OData Metadata Graph",
-    "description": "Graph of all OData entities and their relationships",
-    "icon": "sap-icon://org-chart",
-    "factory": "jubilant.components.visualisation.odatametadatagraph.ODataMetadataGraphFactory",
-    "version": "1.0",
-    "hasAxes": false,
-    "hasFilter": false,
-    "libraries": {
-      "vis": {
-        "path": "https://cdnjs.cloudflare.com/ajax/libs/vis/4.20.0/",
-        "scripts": ["vis.min.js"],
-        "stylesheets": ["vis.min.css"]
-      }
-    }
-  },
-  {
-    "name": "table",
-    "scope": "entityset",
-    "tooltip": "Table visualization",
-    "description": "A table visualizes data as a variable number of rows, showing values along a fixed set of columns.",
-    "icon": "sap-icon://table-view",
-    "factory": "jubilant.components.visualisation.tablevisualisation.TableVisualisationFactory",
-    "version": "1.0",
-    "axes":[
-      {
-        "id": "columns", 
-        "label": "Columns",
-        "icon": "sap-icon://chart-axis"
-      }
-    ]
-  },
-  {
-    "name": "treetable",
-    "scope": "entityset",
-    "tooltip": "Tree Table visualization",
-    "description": "A tree table visualizes data as a variable number of nested rows, showing values along a fixed set of columns.",
-    "icon": "sap-icon://tree",
-    "factory": "jubilant.components.visualisation.treetablevisualisation.TreeTableVisualisationFactory",
-    "version": "1.0",
-    "axes":[
-      {
-        "id": "columns", 
-        "label": "Columns",
-        "icon": "sap-icon://chart-axis"
-      }
-    ]
-  },
-  {
-    "name": "datagraph",
-    "scope": "entityset",
-    "tooltip": "OData Graph visualization",
-    "description": "The graph visualisation uses navigation properties to draw a graph of related data.",
-    "icon": "sap-icon://share-2",
-    "factory": "jubilant.components.visualisation.odatagraphvisualisation.ODataGraphVisualisationFactory",
-    "version": "0.1",
-    "libraries": {
-      "vis": {
-        "path": "https://cdnjs.cloudflare.com/ajax/libs/vis/4.20.0/",
-        "scripts": ["vis.min.js"],
-        "stylesheets": ["vis.min.css"]
-      }
-    }
-  },
-  {
-    "name": "objecthierarchytree",
-    "tooltip": "Object Hierarchy Tree",
-    "description": "A treeview that lets you navigate all navigation properties.",
-    "icon": "sap-icon://tree",
-    "factory": "jubilant.components.visualisation.objecthierarchyvisualisation.ObjectHierarchyVisualisationFactory",
-    "version": "1.0"
-  }  
-]}
+}
