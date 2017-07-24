@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+   Copyright 2017 Roland.Bouman@gmail.com, just-bi.nl
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<mvc:View
+    xmlns:m="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:t="sap.ui.table"
+    displayBlock="true"
+    height="100%"
+    controllerName="jubilant.components.visualisation.objecthierarchyvisualisation.ObjectHierarchyVisualisation"
+>
+  <m:VBox>
+    <core:Fragment fragmentName="jubilant.components.visualisation.VisualisationToolbar" type="XML" />
+    <core:Fragment fragmentName="jubilant.components.visualisation.VisualisationFilterArea" type="XML" />
+    <core:Fragment fragmentName="jubilant.components.visualisation.VisualisationSortArea" type="XML" />
+    <t:TreeTable
+      id="_objectHierarchyTreeTableId"
+      selectionMode="None"
+      toggleOpenState="onToggleOpenState"
+      busy="{visualisationState>/busy}"
+      visibleRowCountMode="Interactive"
+      rows="{
+        path: 'localData>/nodes',
+        parameters: {
+          arrayNames: ['nodes'],
+          countMode: 'Inline'
+        }
+      }"
+    >
+      <t:columns>
+        <t:Column name="name">
+          <t:label>
+            <m:Label 
+              text="{i18n>objectHierarchyTreeTable.column.name.label.text}"
+              tooltip="{i18n>objectHierarchyTreeTable.column.name.label.tooltip}"
+            />
+          </t:label>
+          <t:template>
+            <m:HBox>
+              <core:Icon 
+                src="{= ${localData>icon} ? ${localData>icon} : ${localData>nodeType} === 'entity' ? 'sap-icon://document-text' : ${localData>nodeType} === 'navigationProperty' ? (${localData>multiplicity} === '*' ? 'sap-icon://documents' : 'sap-icon://document-text') : ${localData>type} === 'Edm.String' ? 'sap-icon://text-formatting' : (${localData>type} === 'Edm.Byte' || ${localData>type} === 'Edm.SByte' || ${localData>type} === 'Edm.Int16' || ${localData>type} === 'Edm.Int32' || ${localData>type} === 'Edm.Int64') ? 'sap-icon://number-sign' : (${localData>type} === 'Edm.Decimal' || ${localData>type} === 'Edm.Double' || ${localData>type} === 'Edm.Single' || ${localData>type} === 'Edm.Float' ) ? 'sap-icon://simulate' : ${localData>type} === 'Edm.Guid' ? 'sap-icon://bar-code' : ${localData>type} === 'Edm.Binary' ? 'sap-icon://picture' : ${localData>type} === 'Edm.Boolean' ? 'sap-icon://accept' : ${localData>type} === 'Edm.DateTime' ? 'sap-icon://date-time' : ${localData>type} === 'Edm.Time' ? 'sap-icon://history' : 'sap-icon://checklist-item'}" 
+                class="sapUiTinyMarginEnd"
+              />
+              <m:Link 
+                visible="{= ${localData>uri} ? true : false}"
+                text="{localData>label}"
+                href="{localData>uri}"
+                target="_blank"
+              />
+              <m:Text 
+                visible="{= ${localData>uri} ? false : true}"
+                text="{localData>label}"
+              />
+            </m:HBox>
+          </t:template>
+        </t:Column>
+        <t:Column name="value">
+          <t:label>
+            <m:Label 
+              text="{i18n>objectHierarchyTreeTable.column.value.label.text}"
+              tooltip="{i18n>objectHierarchyTreeTable.column.value.label.tooltip}"
+            />
+          </t:label>
+          <t:template>
+            <m:Text text="{= ${localData>nodeType} === 'property' ? ${localData>type} === 'Edm.Binary' ? 'binary data' : ${localData>value} : ''}"/>
+          </t:template>
+        </t:Column>
+        <t:Column name="type">
+          <t:label>
+            <m:Label 
+              text="{i18n>objectHierarchyTreeTable.column.type.label.text}"
+              tooltip="{i18n>objectHierarchyTreeTable.column.type.label.tooltip}"
+            />
+          </t:label>
+          <t:template>
+            <m:Text text="{localData>type}"/>
+          </t:template>
+        </t:Column>
+      </t:columns>
+    </t:TreeTable>
+  </m:VBox>
+</mvc:View>
