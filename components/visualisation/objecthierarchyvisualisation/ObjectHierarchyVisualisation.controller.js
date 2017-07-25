@@ -28,6 +28,9 @@ function(
   var controller = BaseVisualisationController.extend("jubilant.components.visualisation.objecthierarchyvisualisation.ObjectHierarchyVisualisation", {
     _nodesPath: "nodes",
     _dummyNode: {},
+    _emptyODataResponse: {
+      results: []
+    },
     _localDataModelName: "localData",
     _objectHierarchyTreeTableId: "_objectHierarchyTreeTableId",
     _getObjectHierarchyTreeTable: function(){
@@ -89,10 +92,26 @@ function(
             case "0..1":
             case "1..1":
             case "1":
-              this._renderODataResponseNode(oData, node.type, node.label, node);
-              localDataModel.setProperty(path, node);
+              switch (response.statusCode) {
+                case 204: //"No Content". For example: https://gegevensmagazijn.tweedekamer.nl/OData/v1/Fractie(guid'8f77c8a9-67f4-4793-9018-2361103dd507')/Logo
+                  //I suspect there is an error in the service. For now, we want to treat this as if an empty response was returned.
+                  localDataModel.setProperty(path + "/" + this._nodesPath, []);
+                  break;
+                default:
+                  this._renderODataResponseNode(oData, node.type, node.label, node);
+                  localDataModel.setProperty(path, node);
+              }
               break;
             default:
+              switch (response.statusCode) {
+                case 204: //"No Content". For example: https://gegevensmagazijn.tweedekamer.nl/OData/v1/Fractie(guid'8f77c8a9-67f4-4793-9018-2361103dd507')/Logo
+                  //I suspect there is an error in the service. For now, we want to treat this as if an empty response was returned.
+                  if (typeof(oData) === "undefined") {
+                    oData = this._emptyODataResponse;
+                    jQuery.sap.log.info("OData response was 204: No Content", entityPath, "Substituting for an empty response.");
+                  }
+                  break;
+              }
               this._renderODataResponse(oData, response, path, node.type, node.label);
           }
         }.bind(this),
@@ -216,7 +235,18 @@ function(
       var currentReadRequest = dataModel.read(this._getEntitySetPath(), options);
       currentReadRequest.callback = callback;
       this._currentReadRequest = currentReadRequest;
-    }
+    },
+    _formatValue: function(nodeType, dataType, value){
+      if (nodeType !== "property") {
+        return null;
+      }
+      var defaultUi5Formatter = this._getDefaultFormatterForODataTypeDescriptor(dataType);
+      if (!defaultUi5Formatter) {
+        return value;
+      }
+      var formattedValue = defaultUi5Formatter.format(value);
+      return formattedValue;
+    },
   });
   return controller;
 });
