@@ -442,6 +442,9 @@ function(
       return properties[0];
     },
     _getODataTypeDescriptor: function(name){
+      if (!name) {
+        return null;
+      }
       switch (typeof(name)) {
         case "object":
           if (name && name.oDataProperty) {
@@ -459,6 +462,25 @@ function(
       var model = this.getModel("oDataTypes");
       var oDataTypeDescriptor = model.getProperty("/" + name);
       return oDataTypeDescriptor;
+    },
+    _getDefaultFormatterForODataTypeDescriptor: function(type){
+      var typeDescriptor = this._getODataTypeDescriptor(type);
+      if (!typeDescriptor) {
+        return null;
+      }
+      var defaultUi5Formatter = typeDescriptor.defaultUi5Formatter;
+      if (typeof(defaultUi5Formatter) === "undefined") {
+        if (typeDescriptor.sapUi5Formatter) {
+          var _class = this._getClass(typeDescriptor.sapUi5Formatter["class"]);
+          var factory = _class[typeDescriptor.sapUi5Formatter["factory"]];
+          defaultUi5Formatter = factory.apply(_class, typeDescriptor.sapUi5Formatter.arguments);
+        }
+        else {
+          defaultUi5Formatter = null;
+        }
+        typeDescriptor.defaultUi5Formatter = defaultUi5Formatter
+      }
+      return defaultUi5Formatter;
     },
     _escapeValueForOdataType: function(oDataType, value){
       switch (typeof(value)) {

@@ -76,7 +76,23 @@
             />
           </t:label>
           <t:template>
-            <m:Text text="{= ${localData>nodeType} === 'property' ? ${localData>type} === 'Edm.Binary' ? 'binary data' : ${localData>value} : ''}"/>
+          <!--
+            <m:Text 
+              text="{
+                parts: [
+                  {path: 'localData>nodeType'},
+                  {path: 'localData>type'},
+                  {path: 'localData>value'}
+                ],
+                formatter: '._formatValue'
+              }"
+              wrapping="false"
+            />
+          -->
+            <m:Text 
+              text="{= ${localData>nodeType} === 'property' ? ${localData>type} === 'Edm.Binary' ? 'binary data' : ${localData>value} : ''}"
+              wrapping="false"
+            />
           </t:template>
         </t:Column>
         <t:Column name="type">
@@ -87,7 +103,10 @@
             />
           </t:label>
           <t:template>
-            <m:Text text="{localData>type}"/>
+            <m:Text 
+              text="{localData>type}"
+              wrapping="false"
+            />
           </t:template>
         </t:Column>
       </t:columns>

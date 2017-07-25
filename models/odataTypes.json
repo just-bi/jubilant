@@ -20,13 +20,24 @@
     "min": 0,
     "max": 255,
     "numeric": true,
-    "sapUi5Type": "sap.ui.model.odata.type.Byte"
+    "sapUi5Type": "sap.ui.model.odata.type.Byte",
+    "sapUi5Formatter": {
+      "class": "sap.ui.core.format.NumberFormat",
+      "factory": "getIntegerInstance"
+    }
   },
   "Edm.DateTime": {
     "enclosures": [
       {"prefix": "datetime'", "postfix": "'"}
     ],
-    "sapUi5Type": "sap.ui.model.odata.type.DateTime"
+    "sapUi5Type": "sap.ui.model.odata.type.DateTime",
+    "sapUi5Formatter": {
+      "class": "sap.ui.core.format.DateFormat",
+      "factory": "getDateTimeInstance",
+      "arguments": [{
+        "style": "short"
+      }]
+    }
   },
   "Edm.Decimal": {
     "enclosures": [
@@ -35,7 +46,11 @@
     ],
     "pattern": "[0-9]+\\.[0-9]+",
     "numeric": true,
-    "sapUi5Type": "sap.ui.model.odata.type.Decimal"
+    "sapUi5Type": "sap.ui.model.odata.type.Decimal",
+    "sapUi5Formatter": {
+      "class": "sap.ui.core.format.NumberFormat",
+      "factory": "getFloatInstance"
+    }
   },
   "Edm.Double": {
     "enclosures": [
@@ -43,7 +58,11 @@
     ],
     "pattern": "[0-9]+((\\.[0-9]+)|(E[+-][0-9]+)?)",
     "numeric": true,
-    "sapUi5Type": "sap.ui.model.odata.type.Double"
+    "sapUi5Type": "sap.ui.model.odata.type.Double",
+    "sapUi5Formatter": {
+      "class": "sap.ui.core.format.NumberFormat",
+      "factory": "getFloatInstance"
+    }
   },
   "Edm.Single": {
     "enclosures": [
@@ -51,7 +70,11 @@
     ],
     "pattern": "[0-9]+((\\.[0-9]+)|(E[+-][0-9]+)?)",
     "numeric": true,
-    "sapUi5Type": "sap.ui.model.odata.type.Single"
+    "sapUi5Type": "sap.ui.model.odata.type.Single",
+    "sapUi5Formatter": {
+      "class": "sap.ui.core.format.NumberFormat",
+      "factory": "getFloatInstance"
+    }
   },
   "Edm.Guid": {
     "pattern": "",
