@@ -144,16 +144,22 @@ function(
       }
       var propertyNode, propertyNodes = [], property, value, label = [];
       navigationProperties.forEach(function(navigationProperty){
+        var oDataNavigationProperty = navigationProperty.oDataNavigationProperty;
+        var relationship = oDataNavigationProperty.relationship;
+        var fromRole = oDataNavigationProperty.fromRole;
+        var toRole = oDataNavigationProperty.toRole;
+        var associationEnd = navigationProperty.associationEnd;
+        var role = associationEnd.role;
         propertyNode = {
           nodeType: "navigationProperty",
-          label: navigationProperty.oDataNavigationProperty.name,
-          type: navigationProperty.associationEnd.type,
-          multiplicity: navigationProperty.associationEnd.multiplicity,
-          uri: dataItem[navigationProperty.oDataNavigationProperty.name].__deferred.uri,
-          relationship: navigationProperty.oDataNavigationProperty.relationship,
-          role: navigationProperty.associationEnd.role,
-          fromRole: navigationProperty.oDataNavigationProperty.fromRole,
-          toRole: navigationProperty.oDataNavigationProperty.toRole,
+          label: oDataNavigationProperty.name,
+          type: associationEnd.type,
+          multiplicity: associationEnd.multiplicity,
+          uri: dataItem[oDataNavigationProperty.name].__deferred.uri,
+          relationship: relationship,
+          role: role,
+          fromRole: fromRole,
+          toRole: toRole,
         };
         propertyNode[this._nodesPath] = [this._dummyNode];
         propertyNodes.push(propertyNode);
