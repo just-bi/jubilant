@@ -17,6 +17,7 @@
 <mvc:View
     xmlns:m="sap.m"
     xmlns:core="sap.ui.core"
+    xmlns:commons="sap.ui.commons"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns:t="sap.ui.table"
     displayBlock="true"
@@ -92,7 +93,11 @@
             <m:Text 
               text="{= ${localData>nodeType} === 'property' ? ${localData>type} === 'Edm.Binary' ? 'binary data' : ${localData>value} : ''}"
               wrapping="false"
-            />
+            >
+              <m:tooltip>
+                <commons:RichTooltip title="{= ${localData>nodeType} === 'property' ? ${localData>value} : ''}"/>
+              </m:tooltip>
+            </m:Text>
           </t:template>
         </t:Column>
         <t:Column name="type">

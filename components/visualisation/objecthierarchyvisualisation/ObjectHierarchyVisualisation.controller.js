@@ -67,6 +67,9 @@ function(
         //if was already expanded, then we can't do anything.
         return;
       }
+      //set the row to the busy state.
+      var table = event.getSource();  
+      table.setBusy(true);
       //construct the uri for the navigation set.
       
       //first, get the topmost ancestor to establish the base uri
@@ -82,6 +85,7 @@ function(
       var uri = node.uri;
       if (uri.indexOf(baseUri) !== 0) {
         this._showMessageToast(this.getTextFromI18n("expandNavigationPropertyNode.errorUriDoesNotStartWithBaseUri"));
+        return;
       }
       
       //now we have a path we can push into our ui5 model to do the actual query.
@@ -114,8 +118,10 @@ function(
               }
               this._renderODataResponse(oData, response, path, node.type, node.label);
           }
+          table.setBusy(false);
         }.bind(this),
         error: function(error){
+          table.setBusy(false);
           this._showMessageToast(this.getTextFromI18n("errorLoading"));
         }
       };
@@ -143,7 +149,11 @@ function(
           label: navigationProperty.oDataNavigationProperty.name,
           type: navigationProperty.associationEnd.type,
           multiplicity: navigationProperty.associationEnd.multiplicity,
-          uri: dataItem[navigationProperty.oDataNavigationProperty.name].__deferred.uri
+          uri: dataItem[navigationProperty.oDataNavigationProperty.name].__deferred.uri,
+          relationship: navigationProperty.oDataNavigationProperty.relationship,
+          role: navigationProperty.associationEnd.role,
+          fromRole: navigationProperty.oDataNavigationProperty.fromRole,
+          toRole: navigationProperty.oDataNavigationProperty.toRole,
         };
         propertyNode[this._nodesPath] = [this._dummyNode];
         propertyNodes.push(propertyNode);
@@ -188,7 +198,15 @@ function(
     },
     _clearVisualization: function(){
       var objectHierarchyTreeTable = this._getObjectHierarchyTreeTable();
+      this._getLocalDataModel().setData({});
       objectHierarchyTreeTable.unbindRows();
+      objectHierarchyTreeTable.bindRows({
+        path: 'localData>/nodes',
+        parameters: {
+          arrayNames: ['nodes'],
+          countMode: CountMode.Inline
+        }
+      });
     },
     _checkCanExecuteQuery: function(){
       return true;
@@ -204,6 +222,7 @@ function(
       return sorters;
     },
     _executeQuery: function(callback){
+      this._clearVisualization();
       var options = {
         success: function(oData, response){
           this._renderODataResponse(oData, response);
@@ -236,16 +255,11 @@ function(
       currentReadRequest.callback = callback;
       this._currentReadRequest = currentReadRequest;
     },
-    _formatValue: function(nodeType, dataType, value){
+    _formatValueForTooltip: function(nodeType, dataType, value){
       if (nodeType !== "property") {
-        return null;
+        return '';
       }
-      var defaultUi5Formatter = this._getDefaultFormatterForODataTypeDescriptor(dataType);
-      if (!defaultUi5Formatter) {
-        return value;
-      }
-      var formattedValue = defaultUi5Formatter.format(value);
-      return formattedValue;
+      return this._formatValue(value, dataType);
     },
   });
   return controller;

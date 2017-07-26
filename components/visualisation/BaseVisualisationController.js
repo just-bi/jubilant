@@ -464,6 +464,7 @@ function(
       return oDataTypeDescriptor;
     },
     _getDefaultFormatterForODataTypeDescriptor: function(type){
+      //TODO: https://github.com/just-bi/jubilant/issues/23
       var typeDescriptor = this._getODataTypeDescriptor(type);
       if (!typeDescriptor) {
         return null;
@@ -481,6 +482,27 @@ function(
         typeDescriptor.defaultUi5Formatter = defaultUi5Formatter
       }
       return defaultUi5Formatter;
+    },
+    _formatValue: function(value, dataType) {
+      var oDataTypeDescriptor = this._getODataTypeDescriptor(dataType);
+      var formattedValue, sapUi5TypeObject;
+      if (oDataTypeDescriptor) {
+        sapUi5TypeObject = oDataTypeDescriptor.sapUi5TypeObject;
+        if (!sapUi5TypeObject) {
+          if (oDataTypeDescriptor.sapUi5Type) {
+            var _class = this._getClass(oDataTypeDescriptor.sapUi5Type);
+            var sapUi5TypeObject = new _class();
+            oDataTypeDescriptor.sapUi5TypeObject = sapUi5TypeObject;
+          }
+        }        
+      }
+      if (sapUi5TypeObject) {
+        formattedValue = sapUi5TypeObject.formatValue(value, "string");
+      }
+      else {
+        formattedValue = String(value);
+      }
+      return formattedValue;
     },
     _escapeValueForOdataType: function(oDataType, value){
       switch (typeof(value)) {
