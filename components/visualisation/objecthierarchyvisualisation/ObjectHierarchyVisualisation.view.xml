@@ -31,6 +31,7 @@
     <t:TreeTable
       id="_objectHierarchyTreeTableId"
       selectionMode="None"
+      collapseRecursive="false"
       toggleOpenState="onToggleOpenState"
       busy="{visualisationState>/busy}"
       visibleRowCountMode="Interactive"
