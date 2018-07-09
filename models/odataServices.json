@@ -1,6 +1,12 @@
 {"oDataServices": [
-  { "LABEL": "Tweede Kamer", 
-    "SERVICE_URI": "/odata/tweedekamer", 
+  { "LABEL": "Tweede Kamer (v1)", 
+    "SERVICE_URI": "/odata/tweedekamer/v1", 
+    "sap.ui.model.odata.v2.ODataModel.options": {
+      "maxDataServiceVersion": "3.0"
+    }
+  },
+  { "LABEL": "Tweede Kamer (v3)", 
+    "SERVICE_URI": "/odata/tweedekamer/v3", 
     "sap.ui.model.odata.v2.ODataModel.options": {
       "maxDataServiceVersion": "3.0"
     }
